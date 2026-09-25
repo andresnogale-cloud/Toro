@@ -52,6 +52,28 @@ Each unit has 3 lessons and a unit review. Each lesson opens with a short tip, t
 - **Badges.** 11 achievements, from First steps to Graduate.
 - **Try it.** Some lessons end with a link to practice what you learned. The order-types lesson opens a stock, and the freight lesson opens Saltwater Shipping.
 
+## Your personal stock (Profile)
+
+Your profile is a stock page for you. Your ticker comes from your name (tap **Edit name**). The price lists at $10.00 on the day you start and then moves with your learning:
+
+| Each day | Move |
+| --- | --- |
+| Earn XP | up to +2% (full effect at 60 XP) |
+| Hit your daily goal | +0.5% |
+| Streak bonus | +0.05% per streak day, up to +0.5% |
+| No learning at all | about −3% |
+
+Today only counts once the day ends. The page has:
+
+- A line or candlestick chart you can drag across.
+- A rating from Strong buy to Strong sell, based on the last 7 days.
+- Stats: all-time high and low, change since IPO, current and best streaks, and days learning.
+- A reminder when your stock is about to slip.
+
+Your name, ticker, price and today's move also show in the header. Clicking them opens your profile.
+
+**Learning pays trading cash.** Each finished lesson deposits virtual cash into your practice account: $50 per lesson, $150 per unit review, $25 extra for no mistakes, and $10 for a replay. Deposits appear in History as "Learning reward" and don't count toward your trading return.
+
 ## Practice trading
 
 - 13 fictional companies plus the TXM index fund. Prices update every 2 seconds.

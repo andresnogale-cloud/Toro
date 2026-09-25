@@ -640,6 +640,32 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
 .end-candles{width:min(380px,82%);--ht:84px;--gap:5px;opacity:.9}
 .meter.snd{color:var(--ink-2)!important}
 .meter.snd.off{color:var(--faint)!important}
+/* Personal stock */
+.me-hero{display:grid;gap:4px;padding-top:6px}
+.me-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.me-id{display:flex;align-items:center;gap:16px}
+.me-av{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:var(--serif);font-size:28px;font-weight:600;color:#1A1204;background:var(--gold-grad);box-shadow:0 0 0 3px #000,0 0 0 4px rgba(216,179,90,.5)}
+.me-av.sm{width:26px;height:26px;font-size:13px;font-family:var(--body);font-weight:800;box-shadow:none}
+.me-name-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.me-name-row h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,4vw,42px);letter-spacing:0;line-height:1.05}
+.me-sub{font-size:13px;margin-top:6px;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.me-sub .tkr{font-size:12px;padding:2px 8px;color:var(--gold-hi);border-color:rgba(216,179,90,.4)}
+.me-rating{display:grid;gap:4px;text-align:right}
+.me-rating b{font-size:18px;font-weight:800}
+.me-rating b.flat{color:var(--gold)}
+.me-alert{font-size:13.5px;font-weight:600;margin-top:10px}
+.acc-gold{color:var(--gold)}
+#meChart{height:300px}
+.me-kv{grid-template-columns:repeat(3,1fr)}
+.rules{display:grid;gap:0}
+.rules>div{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:14px;align-items:baseline}
+.rules>div>span:first-child{font-weight:800;font-variant-numeric:tabular-nums}
+.me-chip{display:flex;align-items:center;gap:8px;border:1px solid var(--line-2);background:transparent;border-radius:99px;padding:4px 12px 4px 4px;font-size:13px;font-weight:700;transition:border-color .2s,background .2s}
+.me-chip:hover{border-color:rgba(216,179,90,.5);background:#0B0B0D}
+.me-tk{color:var(--gold-hi);letter-spacing:.04em}
+@media (max-width:1100px){ .me-chip #chipPx{display:none} }
+.me-hero,.rh-hero{background:#000}
+@media (max-width:640px){ .top-in{gap:6px} .meters{gap:0} .meter{padding:5px 5px} .me-chip .me-tk,.me-chip #chipPx,.me-chip #chipCh{display:none} .me-chip{padding:2px;border:0} .me-chip{padding:3px 8px 3px 3px} .me-kv{grid-template-columns:1fr 1fr} .rules>div{grid-template-columns:110px 1fr} .me-rating{text-align:left} #meChart{height:230px} }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .emblem.draw path{stroke-dashoffset:0}
@@ -682,6 +708,7 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
       <button role="tab" data-tab="profile" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</button>
     </nav>
     <div class="meters" id="meters"></div>
+    <button class="me-chip" id="meChip" type="button" aria-label="Your profile"><span class="me-av sm" id="chipAv">Y</span><span class="me-tk" id="chipTk">YOU</span><span class="num" id="chipPx"></span><span class="num" id="chipCh"></span></button>
     <button class="meter snd" id="sndBtn" type="button" aria-pressed="true" aria-label="Sound on" title="Sound on"></button>
   </div>
 </header>
@@ -824,7 +851,51 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
 
   <!-- PROFILE -->
   <section class="view" id="v-profile" hidden>
-    <div class="pstats" id="pstats"></div>
+    <div class="me-hero">
+      <div class="me-top">
+        <div class="me-id">
+          <div class="me-av" id="meAv">Y</div>
+          <div>
+            <div class="me-name-row" id="meNameRow"><h1 id="meName">You</h1><button class="btn ghost sm" type="button" id="meEdit">Edit name</button></div>
+            <div class="me-sub muted"><span class="tkr" id="meTkr">YOU</span><span id="meListed"></span></div>
+          </div>
+        </div>
+        <div class="me-rating" id="meRating"></div>
+      </div>
+      <div class="px-big odo num" id="mePx"></div>
+      <div class="px-chg" id="meChg"></div>
+      <div class="me-alert" id="meAlert"></div>
+      <div class="row between" style="margin-top:10px">
+        <span class="eyebrow">Your stock · price moves with your learning</span>
+        <div class="seg" id="meType" role="group" aria-label="Chart type"><button type="button" data-type="line" aria-pressed="true">Line</button><button type="button" data-type="candle" aria-pressed="false">Candles</button></div>
+      </div>
+      <div class="chartbox"><canvas id="meChart" aria-label="Your personal stock price. Move across it to see past days."></canvas></div>
+      <div class="ranges" id="meRange" role="group" aria-label="Chart range"><button type="button" data-r="1W" aria-pressed="false">1W</button><button type="button" data-r="1M" aria-pressed="true">1M</button><button type="button" data-r="3M" aria-pressed="false">3M</button><button type="button" data-r="ALL" aria-pressed="false">All</button></div>
+    </div>
+    <div class="panel"><div class="kv me-kv" id="meStats"></div></div>
+    <div class="two">
+      <div class="panel" style="display:grid;gap:12px;align-content:start">
+        <h2>What moves your stock</h2>
+        <div class="rules">
+          <div><span class="up">▲ up to 2%</span><span>Earn XP on a day. More XP, bigger move (full effect at 60 XP).</span></div>
+          <div><span class="up">▲ +0.5%</span><span>Hit your daily goal.</span></div>
+          <div><span class="up">▲ +0.05% a day</span><span>Streak bonus, up to +0.5% at a 10-day streak.</span></div>
+          <div><span class="down">▼ about 3%</span><span>Each full day with no learning.</span></div>
+        </div>
+        <p class="muted" style="margin:0;font-size:13px">Today only counts once it ends, so there is still time to move it up.</p>
+      </div>
+      <div class="panel" style="display:grid;gap:12px;align-content:start">
+        <h2>Learning pays</h2>
+        <div class="rules">
+          <div><span class="acc-gold">+$50</span><span>Finish a lesson</span></div>
+          <div><span class="acc-gold">+$150</span><span>Pass a unit review</span></div>
+          <div><span class="acc-gold">+$25</span><span>Bonus for no mistakes</span></div>
+          <div><span class="acc-gold">+$10</span><span>Replay a finished lesson</span></div>
+        </div>
+        <div class="row between"><span class="muted" style="font-size:14px">Trading cash earned so far</span><b class="num" id="meEarned"></b></div>
+        <p class="muted" style="margin:0;font-size:13px">Rewards go straight into your practice account on the Trade tab. It's virtual money for practice, not real funds.</p>
+      </div>
+    </div>
     <div class="two">
       <div class="card" style="display:grid;gap:12px;align-content:start">
         <div class="row" style="justify-content:space-between"><h2>This week</h2><span class="muted num" style="font-size:13px" id="weekTotal"></span></div>
@@ -968,7 +1039,7 @@ function starterTrade(){
 const freshLearn = () => ({course:'invest', done:{}, xp:0, days:{}, streak:{count:0,last:null,best:0,freezes:0}, hearts:5, heartAt:0, gems:25, goal:20, badges:[], tier:0, week:dkey(weekStart(today)), perfect:0});
 let S;
 try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e){ S=null; }
-if(!S || typeof S.cash!=='number') S = starterTrade();
+if(!S || typeof S.cash!=='number') S = {...starterTrade(), learn:S&&S.learn}; // keep learning progress even if trading data is missing
 S.learn = Object.assign(freshLearn(), S.learn||{});
 const Lr = () => S.learn;
 const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} };
@@ -1334,6 +1405,8 @@ function finish(){
   const xp = P.replay ? 5 : (P.isReview?20:10) + (perfect?5:0);
   const gems = P.replay ? 0 : (P.isReview?15:5) + (perfect?5:0);
   addXP(xp); Lr().gems+=gems;
+  const cash = P.replay ? 10 : (P.isReview?150:50) + (perfect?25:0);
+  S.cash+=cash; S.deposits=(S.deposits||0)+cash; S.txns.push({t:Date.now(),s:'CASH',side:'deposit',qty:0,px:cash});
   Lr().done[P.key]=true; if(perfect) Lr().perfect++;
   day().lessons++;
   const extended = bumpStreak();
@@ -1342,7 +1415,7 @@ function finish(){
   const acc=Math.round(P.total/(P.total+P.mistakes)*100);
   const ap = P.lesson && P.lesson.apply;
   P.apply = ap ? {href:ap, label: /^#[A-Z]+$/.test(ap) ? `Try it: open ${ap.slice(1)}` : ap==='#portfolio' ? 'Try it: check your portfolio' : 'Try it: open the calculators'} : null;
-  P.summary={xp,gems,secs,acc,perfect,extended};
+  P.summary={xp,gems,cash,secs,acc,perfect,extended};
   P.phase='end'; renderPlayer(); Sound.play('complete');
   el('player').querySelectorAll('[data-count]').forEach(n=>countUp(n, +n.dataset.count, n.dataset.suffix||''));
 }
@@ -1355,7 +1428,7 @@ function renderEnd(){
       <div><span class="eyebrow">Time</span><b>${t}</b></div>
     </div>
     <div class="crow end-candles" aria-hidden="true">${candleRow(16, Date.now()%1e6)}</div>
-    <p class="muted end-note">${s.extended?`${I.flame}<span>${Lr().streak.count}-day streak</span>`:''}${s.gems?`${I.gem}<span>+${s.gems} credits</span>`:''}</p></div>`;
+    <p class="muted end-note">${s.extended?`${I.flame}<span>${Lr().streak.count}-day streak</span>`:''}${s.gems?`${I.gem}<span>+${s.gems} credits</span>`:''}${I.chart}<span>+${$(s.cash)} trading cash</span></p></div>`;
 }
 document.addEventListener('keydown',e=>{
   if(!P || el('player').hidden || P.quit) return;
@@ -1364,10 +1437,98 @@ document.addEventListener('keydown',e=>{
   if(P.phase==='q' && !P.checked && /^[1-9]$/.test(e.key)){ const opts=el('player').querySelectorAll('.p-body [data-pick]'); const b=opts[+e.key-1]; if(b) b.click(); }
 });
 
+/* ---------- Personal stock: your price moves with your learning ---------- */
+const IPO=10;
+if(!Lr().created){ const ks=Object.keys(Lr().days).sort(); Lr().created = ks[0] && ks[0]<TODAY ? ks[0] : TODAY; }
+const myName = () => (Lr().name||'').trim() || 'You';
+const myTicker = () => { const t=myName().normalize('NFD').replace(/[^A-Za-z]/g,'').toUpperCase().slice(0,4); return t.length>=2 ? t : 'YOU'; };
+function myStock(){
+  const l=Lr(), out=[]; let d=new Date(l.created+'T00:00:00'), p=IPO, streak=0;
+  // the listing day opens at the IPO price
+  out.push({k:'ipo', date:addDays(d,-1), o:IPO, c:IPO, h:IPO, l:IPO, v:0, xp:0});
+  while(dkey(d)<=TODAY){
+    const k=dkey(d), x=(l.days[k]||{}).xp||0, r=mulberry32(hash('me'+k)); let m;
+    if(x>0){ streak++; m = Math.min(x,60)/60*.02 + (x>=l.goal?.005:0) + Math.min(streak,10)*.0005; }
+    else if(k===TODAY) m = 0;
+    else { streak=0; m = -(.025+r()*.01); }
+    const o=p, c=Math.max(.5,p*(1+m)), w=.003+r()*.008;
+    out.push({k, date:new Date(d), o, c, h:Math.max(o,c)*(1+w), l:Math.min(o,c)*(1-w), v:x, xp:x});
+    p=c; d=addDays(d,1);
+  }
+  return out;
+}
+let meRange='1M', meType='line', meHover=null, geoMe=null, meRevealAt=0;
+function meSeries(){
+  const all=myStock(), n={'1W':8,'1M':31,'3M':91,'ALL':all.length}[meRange];
+  const k=all.slice(-n); if(k.length<2) k.unshift(all[0]);
+  return {c:k.map(q=>q.c), o:k.map(q=>q.o), h:k.map(q=>q.h), l:k.map(q=>q.l), v:k.map(q=>q.v), base:null, slots:k.length,
+    at:i=> k[i].k==='ipo' ? 'IPO' : k[i].k===TODAY ? 'Today' : fmtDay(k[i].date), raw:k};
+}
+function meRating(all){
+  const c=all.map(q=>q.c), last=c[c.length-1], wk=c[Math.max(0,c.length-8)], ch=(last-wk)/wk;
+  return ch>.08?['Strong buy','up']:ch>.02?['Buy','up']:ch>-.02?['Hold','flat']:ch>-.08?['Sell','down']:['Strong sell','down'];
+}
+function showMe(){
+  const d=meSeries(), all=myStock(), last=all[all.length-1];
+  const val = meHover!=null ? d.c[meHover] : last.c, ref = d.c[0], ch=val-ref;
+  odo(el('mePx'), $(val)); setMood(ch>=0);
+  const label = meHover!=null ? d.at(meHover) : ({'1W':'Past week','1M':'Past month','3M':'Past 3 months','ALL':'Since IPO'})[meRange];
+  el('meChg').innerHTML=`<span class="${cls(ch)}">${signed$(ch)} (${pct(ref?ch/ref*100:0)})</span> <span class="muted">${label}</span>`;
+}
+function renderMe(full){
+  const l=Lr(), all=myStock(), last=all[all.length-1], prev=all[all.length-2]||last, name=myName(), tk=myTicker();
+  if(full){
+    el('meName').textContent=name; el('meAv').textContent=name[0].toUpperCase(); el('meTkr').textContent=tk;
+    el('meListed').textContent=` · Listed ${fmtDay(new Date(l.created+'T00:00:00'))} at ${$(IPO)} · ${TIERS[l.tier]} league`;
+    const [rt,rc]=meRating(all); el('meRating').innerHTML=`<span class="eyebrow">Rating</span><b class="${rc}">${rt}</b>`;
+    const today=day(), g=l.goal;
+    el('meAlert').innerHTML = today.xp>=g ? `<span class="up">▲ Goal hit today. Your stock closes higher tonight.</span>`
+      : today.xp>0 ? `<span class="acc-gold">${g-today.xp} XP to your daily goal adds another +0.5%.</span>`
+      : `<span class="down">▼ No learning yet today. Your stock slips about 3% at midnight unless you finish a lesson.</span>`;
+    const cs=all.map(q=>q.c), active=all.filter(q=>q.xp>0).length;
+    el('meStats').innerHTML=[
+      ['All-time high',$(Math.max(...cs))],['All-time low',$(Math.min(...cs))],['Since IPO',`<span class="${cls(last.c-IPO)}">${pct((last.c-IPO)/IPO*100)}</span>`],
+      ['Current streak',`${streakNow()} day${streakNow()===1?'':'s'}`],['Best streak',`${l.streak.best} day${l.streak.best===1?'':'s'}`],['Days learning',`${active} of ${all.length-1}`],
+      ['Total XP',l.xp],['Lessons done',Object.keys(l.done).length],['League',TIERS[l.tier]]
+    ].map(([k,v])=>`<div><span class="eyebrow">${k}</span><b>${v}</b></div>`).join('');
+    el('meEarned').textContent=$(S.deposits||0);
+    meRevealAt=performance.now();
+  }
+  showMe();
+}
+function renderMeChip(){
+  const all=myStock(), last=all[all.length-1], prev=all[all.length-2]||last, ch=(last.c-prev.c)/prev.c*100;
+  el('chipAv').textContent=myName()[0].toUpperCase(); el('chipTk').textContent=myTicker();
+  el('chipPx').textContent=$(last.c); const c=el('chipCh'); c.textContent=pct(ch); c.className='num '+cls(ch);
+}
+function drawMe(){ geoMe=drawPro(el('meChart'), meSeries(), {type:meType, hover:meHover, reveal:revealK(meRevealAt)}); }
+el('meChart').addEventListener('pointermove',e=>{ meHover=hoverIndex(e,el('meChart'),geoMe); showMe(); });
+el('meChart').addEventListener('pointerdown',e=>{ meHover=hoverIndex(e,el('meChart'),geoMe); showMe(); });
+el('meChart').addEventListener('pointerleave',()=>{ meHover=null; showMe(); });
+el('meRange').addEventListener('click',e=>{ const b=e.target.closest('[data-r]'); if(!b) return; meRange=b.dataset.r; meHover=null; meRevealAt=performance.now();
+  el('meRange').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); showMe(); });
+el('meType').addEventListener('click',e=>{ const b=e.target.closest('[data-type]'); if(!b) return; meType=b.dataset.type; meRevealAt=performance.now();
+  el('meType').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); });
+el('meChip').addEventListener('click',()=>{ Sound.play('tap'); showTab('profile'); });
+// Edit name inline (the viewer blocks prompt dialogs)
+const nameRowHTML=el('meNameRow').innerHTML;
+function renderProfileNameRow(){ const row=el('meNameRow'); row.innerHTML=nameRowHTML; el('meEdit').addEventListener('click',openNameEditor); }
+function openNameEditor(){
+  const row=el('meNameRow');
+  row.innerHTML=`<input id="meNameIn" class="tin" style="width:220px;text-align:left" maxlength="24" value="${esc(Lr().name||'')}" placeholder="Your name" aria-label="Your name"><button class="btn primary" type="button" id="meSave">Save</button><button class="btn ghost" type="button" id="meCancel">Cancel</button>`;
+  const inp=el('meNameIn'); inp.focus();
+  el('meSave').onclick=()=>{ Lr().name=inp.value.trim().slice(0,24); save(); toast(`Your ticker is now ${myTicker()}`); renderProfileNameRow(); renderMe(true); renderMeChip(); };
+  el('meCancel').onclick=()=>{ renderProfileNameRow(); renderMe(true); };
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter') el('meSave').click(); if(e.key==='Escape') el('meCancel').click(); });
+}
+
+el('meEdit').addEventListener('click',openNameEditor);
+
 /* ---------- Profile ---------- */
 function renderProfile(){
   const l=Lr(); const lessons=Object.keys(l.done).length;
-  el('pstats').innerHTML = [
+  renderMe(true);
+  if(false) el('pstats').innerHTML = [
     [I.flame,'var(--flame)',streakNow(),'Day streak',`Best: ${l.streak.best}`],
     [I.bolt,'var(--gold)',l.xp,'Total XP',''],
     [I.book,'var(--up)',lessons,'Lessons done',''],
@@ -1452,7 +1613,8 @@ function drawPro(c, d, o={}){
   const n=d.c.length, slots=Math.max(d.slots||n, 2);
   const lo=candle?d.l:d.c, hi=candle?d.h:d.c;
   let min=Math.min(...lo), max=Math.max(...hi); if(d.base!=null){min=Math.min(min,d.base);max=Math.max(max,d.base);}
-  const span=(max-min)||max*.01||1; min-=span*.07; max+=span*.07;
+  if(max-min < Math.abs(max)*.004){ const mid=(max+min)/2||1; min=mid*.985; max=mid*1.015; } // flat series: keep a readable axis
+  const span=(max-min)||1; min-=span*.07; max+=span*.07;
   const X = candle ? i=>padL+(i+.5)/slots*cw : i=>padL+i/(slots-1)*cw;
   const Y = v=>padT+(1-(v-min)/(max-min))*ch;
   const UP=css('--up'), DN=css('--down'), ACC=o.color||css('--accent');
@@ -1525,7 +1687,7 @@ function setMood(up){ if(up===moodUp) return; moodUp=up; const r=document.docume
 function portfolio(){
   let invested=0, dayPL=0, cost=0;
   for(const [s,h] of Object.entries(S.holdings)){ invested+=h.qty*M[s].price; cost+=h.cost; dayPL+=h.qty*chg(s); }
-  const value=S.cash+invested; return {value, invested, dayPL, cost, total:value-START_CASH};
+  const value=S.cash+invested; return {value, invested, dayPL, cost, total:value-START_CASH-(S.deposits||0)};
 }
 function divScore(){
   const inv=portfolio().invested; const bySec={};
@@ -1753,7 +1915,7 @@ function renderPortfolio(live){
   const p=portfolio();
   showPortValue();
   el('pCash').textContent=$(S.cash);
-  el('pTotal').innerHTML=`<span class="${cls(p.total)}">${signed$(p.total)} (${pct(p.total/START_CASH*100)})</span>`;
+  el('pTotal').innerHTML=`<span class="${cls(p.total)}">${signed$(p.total)} (${pct(p.total/(START_CASH+(S.deposits||0))*100)})</span>`;
   el('pInv').textContent=$(p.invested);
   el('pDay').innerHTML=`<span class="${cls(p.dayPL)}">${signed$(p.dayPL)}</span>`;
   const {score,bySec,inv,biggest}=divScore();
@@ -1790,7 +1952,8 @@ function renderPortfolio(live){
     : '<p class="empty">No alerts. Set one from any stock in Trade.</p>';
   const tx=[...S.txns].reverse().slice(0,25);
   el('history').innerHTML = tx.length ? tx.map(t=>`<tr><td>${new Date(t.t).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</td>
-      <td class="${t.side==='buy'?'up':'down'}">${t.side==='buy'?'Buy':'Sell'} ${t.s}</td><td>${qtyF(t.qty)}</td><td>${$(t.px)}</td><td>${$(t.qty*t.px)}</td></tr>`).join('')
+      ${t.side==='deposit' ? `<td class="acc-gold">Learning reward</td><td>—</td><td>—</td><td>+${$(t.px)}</td></tr>`
+        : `<td class="${t.side==='buy'?'up':'down'}">${t.side==='buy'?'Buy':'Sell'} ${t.s}</td><td>${qtyF(t.qty)}</td><td>${$(t.px)}</td><td>${$(t.qty*t.px)}</td></tr>`}`).join('')
     : `<tr><td colspan="5" class="empty">No trades yet.</td></tr>`;
 }
 el('v-portfolio').addEventListener('click',e=>{
@@ -1803,7 +1966,7 @@ resetBtn.addEventListener('click',()=>{
   el('resetRow').innerHTML=`<span class="muted" style="font-size:14px">This clears your trades, alerts and orders. Learning progress stays.</span>
     <button class="btn" type="button" id="resetNo">Keep my account</button><button class="btn sell" type="button" id="resetYes">Reset</button>`;
   el('resetNo').onclick=()=>el('resetRow').replaceChildren(resetBtn);
-  el('resetYes').onclick=()=>{ Object.assign(S,{cash:START_CASH,holdings:{},txns:[],alerts:[],orders:[],starter:false}); save(); el('resetRow').replaceChildren(resetBtn); pRevealAt=performance.now(); renderTab(); toast('Account reset to $10,000 cash'); };
+  el('resetYes').onclick=()=>{ Object.assign(S,{cash:START_CASH,holdings:{},txns:[],alerts:[],orders:[],starter:false,deposits:0}); save(); el('resetRow').replaceChildren(resetBtn); pRevealAt=performance.now(); renderTab(); toast('Account reset to $10,000 cash'); };
 });
 
 /* Tools */
@@ -1850,13 +2013,15 @@ function showTab(t, push=true){
   if(push) history.replaceState(null,'','#'+t);
   if(t==='trade') revealAt=performance.now();
   if(t==='portfolio') pRevealAt=performance.now();
+  if(t==='profile') meRevealAt=performance.now();
   moveInd(); renderTab(); window.scrollTo(0,0);
 }
 document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>{ Sound.play('tap'); showTab(b.dataset.tab); }));
 
 function renderTab(live){
   renderMeters();
-  if(tab!=='trade' && tab!=='portfolio') setMood(true);
+  renderMeChip();
+  if(tab!=='trade' && tab!=='portfolio' && tab!=='profile') setMood(true);
   if(tab==='learn' && !live) renderLearn();
   if(tab==='trade'){ renderBP(); updateTape(); renderMovers(); if(live){ updateList(false); renderStock(false); } else { renderFilters(); buildList(); renderStock(true); } }
   if(tab==='portfolio') renderPortfolio(live);
@@ -1981,7 +2146,7 @@ function candleRow(n, seed, trend=.72){
 })();
 // Live charts redraw at ~30fps for the draw-in, pulse and scrub animations
 (function chartLoop(){ let last=0; const f=t=>{ if(!document.hidden && t-last>32){ last=t;
-  if(tab==='trade' && (!P||el('player').hidden)) drawStock(); if(tab==='portfolio') drawPort(); } requestAnimationFrame(f); }; requestAnimationFrame(f); })();
+  if(tab==='trade' && (!P||el('player').hidden)) drawStock(); if(tab==='portfolio') drawPort(); if(tab==='profile') drawMe(); } requestAnimationFrame(f); }; requestAnimationFrame(f); })();
 addEventListener('load',moveInd); document.fonts?.ready.then(moveInd);
 
 settleStreak(); settleLeague(); regenHearts();

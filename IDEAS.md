@@ -51,6 +51,10 @@ Toro teaches money, markets and business in bite-size lessons, then lets you pra
 
 ## Bigger bets
 
+- **Real brokerage connection.** Let learners who finish a course open a real account through a licensed brokerage partner. Alpaca and DriveWealth offer broker APIs. This needs the partner's compliance review, KYC and regulatory approval before any real money moves. Until then, rewards stay virtual.
+- **Live TradingView charts.** TradingView's embeddable widgets could show real market charts once Toro is hosted on its own domain. The artifact preview blocks outside scripts and iframes.
+- **Personal stock leagues.** Compare your personal stock with friends' tickers, and share a card of your chart.
+
 - **Accounts and sync.** Sign in with Apple or Google so progress follows you between devices.
 - **Native apps.** Wrap the web app with Capacitor or rebuild in React Native. The `.well-known` files already cover universal links.
 - **AI tutor.** Explains a wrong answer in different words, answers follow-up questions, and makes new practice questions from your weak spots.
