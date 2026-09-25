@@ -513,6 +513,8 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
 @keyframes logoIn{from{opacity:0;transform:scale(.95);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
 @keyframes sweep{from{background-position:160% 0}to{background-position:-60% 0}}
 .splash .tagline{animation-delay:1.3s}
+.tap-hint{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--faint);opacity:0;animation:tagIn .8s ease 1.9s forwards, breatheTxt 2.4s ease-in-out 2.7s infinite}
+@keyframes breatheTxt{50%{opacity:.45}}
 .meter{color:var(--ink-2)!important;font-weight:600;gap:6px}
 .meter svg{width:17px;height:17px;filter:none!important;animation:none!important}
 .meter.flame:not(.off){color:var(--gold)!important}
@@ -686,6 +688,7 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .emblem.draw path{stroke-dashoffset:0}
   .splash .wordmark,.splash .tagline{opacity:1;transform:none}
+  .tap-hint{opacity:.6}
 }
 </style>
 
@@ -709,7 +712,8 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
 </svg>
 <div class="splash" id="splash">
   <div class="crow splash-candles" id="splashCandles" aria-hidden="true"></div>
-  <div class="splash-in"><div class="splash-logo"><img src="assets/toro-full.png" alt="Toro" width="320" height="276"></div><div class="tagline">Learn money · Master markets</div></div>
+  <div class="splash-in"><div class="splash-logo"><img src="assets/toro-full.png" alt="Toro" width="320" height="276"></div><div class="tagline">Learn money · Master markets</div>
+    <div class="tap-hint">Tap to enter</div></div>
 </div>
 <header class="top">
   <div class="top-in">
@@ -1087,41 +1091,67 @@ function haptic(k){
 
 /* ---------- Sound: soft synthesised tones, no audio files ---------- */
 const Sound=(()=>{
-  let ctx=null, out=null;
+  // Futuristic trading-terminal sound set: synth voices, digital clicks and a short
+  // filtered echo for space. Everything is generated live; there are no audio files.
+  let ctx=null, out=null, wet=null, noiseBuf=null;
   const enabled=()=>S.sound!==false;
   function ac(){
     if(!ctx){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return null;
       try{ ctx=new C(); }catch(e){ return null; }
-      const comp=ctx.createDynamicsCompressor(); comp.threshold.value=-18; comp.ratio.value=3;
-      out=ctx.createGain(); out.gain.value=.9; out.connect(comp).connect(ctx.destination); }
+      const comp=ctx.createDynamicsCompressor(); comp.threshold.value=-16; comp.ratio.value=4; comp.attack.value=.003; comp.release.value=.15;
+      out=ctx.createGain(); out.gain.value=.85; out.connect(comp).connect(ctx.destination);
+      const d=ctx.createDelay(1), fb=ctx.createGain(), lp=ctx.createBiquadFilter();
+      d.delayTime.value=.13; fb.gain.value=.28; lp.type='lowpass'; lp.frequency.value=3200;
+      wet=ctx.createGain(); wet.gain.value=.22; wet.connect(d); d.connect(lp); lp.connect(fb); fb.connect(d); lp.connect(out);
+      noiseBuf=ctx.createBuffer(1, Math.floor(ctx.sampleRate*.2), ctx.sampleRate); const ch=noiseBuf.getChannelData(0); for(let i=0;i<ch.length;i++) ch[i]=Math.random()*2-1;
+    }
     if(ctx.state==='suspended') ctx.resume();
     return ctx;
   }
-  // one voice: a sine plus a quiet octave partial for a bell-like, expensive feel
-  function tone(f, at, dur, o={}){
-    const c=ac(); if(!c) return; const t=c.currentTime+at, g=c.createGain(), vol=o.gain??.06;
-    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+(o.attack??.008)); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-    g.connect(out);
-    const parts=o.type ? [[o.type,1,1]] : [['sine',1,1],['sine',2,.18],['triangle',3,.05]];
-    for(const [type,mult,amp] of parts){ const osc=c.createOscillator(), a=c.createGain(); osc.type=type; osc.frequency.setValueAtTime(f*mult,t);
-      if(o.slide) osc.frequency.exponentialRampToValueAtTime(f*mult*o.slide,t+dur); a.gain.value=amp; osc.connect(a).connect(g); osc.start(t); osc.stop(t+dur+.05); }
+  function v(f, at, dur, o={}){
+    const c=ac(); if(!c) return; const t=c.currentTime+at, osc=c.createOscillator(), g=c.createGain();
+    osc.type=o.type||'sine'; osc.frequency.setValueAtTime(f,t); if(o.to) osc.frequency.exponentialRampToValueAtTime(o.to,t+(o.glide??dur)); if(o.detune) osc.detune.value=o.detune;
+    let node=osc;
+    if(o.lp){ const fl=c.createBiquadFilter(); fl.type='lowpass'; fl.frequency.setValueAtTime(o.lp,t); if(o.lpTo) fl.frequency.exponentialRampToValueAtTime(o.lpTo,t+dur); fl.Q.value=o.q??6; osc.connect(fl); node=fl; }
+    const vol=o.gain??.05; g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+(o.attack??.004)); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    node.connect(g); g.connect(out); if(o.wet!==false) g.connect(wet);
+    osc.start(t); osc.stop(t+dur+.05);
   }
+  function click(at=0, gain=.05, hp=4000, dur=.025){ const c=ac(); if(!c) return; const t=c.currentTime+at;
+    const src=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain(); src.buffer=noiseBuf; f.type='highpass'; f.frequency.value=hp;
+    g.gain.setValueAtTime(gain,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); src.connect(f).connect(g).connect(out); src.start(t); src.stop(t+dur+.02); }
   const SFX={
-    tap:     ()=>tone(1320,0,.06,{gain:.018,type:'sine'}),
-    select:  ()=>tone(880,0,.09,{gain:.03}),
-    correct: ()=>{ tone(784,0,.22,{gain:.055}); tone(1175,.09,.42,{gain:.05}); },
-    wrong:   ()=>{ tone(247,0,.32,{gain:.06,type:'triangle',slide:.84}); },
-    pair:    ()=>tone(1047,0,.16,{gain:.035}),
-    complete:()=>{ [523,659,784,1047].forEach((f,i)=>tone(f,i*.1,.7,{gain:.05})); tone(1568,.45,1.1,{gain:.025}); },
-    trade:   ()=>{ tone(1319,0,.12,{gain:.04}); tone(1976,.08,.5,{gain:.035}); },
-    chime:   ()=>{ [880,1109,1319].forEach((f,i)=>tone(f,i*.08,.55,{gain:.035})); },
-    alert:   ()=>{ tone(988,0,.18,{gain:.045}); tone(988,.22,.3,{gain:.04}); },
+    tap:     ()=>{ click(0,.035,5000,.02); v(2400,0,.03,{type:'square',gain:.008,lp:5000,wet:false}); },
+    select:  ()=>{ click(0,.025,6000,.015); v(1560,0,.07,{to:1180,gain:.04}); },
+    correct: ()=>{ v(880,0,.14,{type:'triangle',gain:.05}); v(1320,.07,.32,{type:'triangle',gain:.05}); v(1760,.07,.32,{gain:.02,detune:6}); click(.07,.02,7000); },
+    wrong:   ()=>{ v(330,0,.34,{type:'sawtooth',to:150,gain:.05,lp:1800,lpTo:300,q:4}); v(338,0,.34,{type:'sawtooth',to:152,gain:.03,lp:1800,lpTo:300}); },
+    pair:    ()=>{ v(1760,0,.09,{type:'triangle',gain:.03}); click(0,.015,7000); },
+    trade:   ()=>{ click(0,.05,3500,.03); [1046,1318,1568,2093].forEach((f,i)=>v(f,.02+i*.045,.18,{type:'square',gain:.014,lp:3800})); v(2093,.2,.5,{gain:.03}); },
+    complete:()=>{ v(110,0,.9,{type:'sawtooth',to:440,glide:.6,gain:.035,lp:300,lpTo:4000,q:8}); [523,659,784,1047,1568].forEach((f,i)=>v(f,.35+i*.07,.9,{type:'triangle',gain:.035})); click(.35,.03,6000); },
+    chime:   ()=>{ [1318,1760,2637].forEach((f,i)=>v(f,i*.06,.45,{gain:.032})); },
+    alert:   ()=>{ [0,.16].forEach(t=>{ v(1480,t,.12,{type:'square',gain:.016,lp:3000}); v(1976,t+.06,.16,{gain:.035}); }); },
+    up:      ()=>v(1900,0,.05,{gain:.007,wet:false}),
+    down:    ()=>v(1400,0,.05,{gain:.006,wet:false}),
+    boot:    ()=>{ // power-up: sub hit and a rising filtered sweep, then a two-note "market open" signature
+      v(55,0,.7,{gain:.08,wet:false});
+      v(80,0,1.1,{type:'sawtooth',to:880,glide:.9,gain:.03,lp:200,lpTo:5000,q:10});
+      v(82,0,1.1,{type:'sawtooth',to:885,glide:.9,gain:.02,lp:200,lpTo:5000,q:10,detune:12});
+      click(.9,.05,3000,.05); v(1175,.92,.5,{type:'triangle',gain:.045}); v(1760,1.02,.9,{gain:.04}); v(2349,1.02,.9,{gain:.015,detune:8}); },
   };
   return {
     play(k){ haptic(k); if(enabled() && SFX[k]) try{ SFX[k](); }catch(e){} },
     on: enabled,
     toggle(){ S.sound = !enabled(); save(); if(enabled()) SFX.chime(); return enabled(); }
   };
+})();
+// Power-up sound on the first tap of each visit. Browsers only allow audio after a tap,
+// so tapping the opening logo (which also skips it) starts Toro with sound.
+(function bootSound(){
+  let done=false; try{ done=sessionStorage.getItem('toro.boot')==='1'; }catch(e){}
+  if(done) return;
+  const go=()=>{ removeEventListener('pointerdown',go,true); removeEventListener('keydown',go,true);
+    try{ sessionStorage.setItem('toro.boot','1'); }catch(e){} Sound.play('boot'); };
+  addEventListener('pointerdown',go,true); addEventListener('keydown',go,true);
 })();
 
 /* =====================================================================
@@ -2078,6 +2108,7 @@ let paused=false;
 el('status').addEventListener('click',()=>{ paused=!paused; el('status').classList.toggle('paused',paused); el('statusLbl').textContent=paused?'Paused':'Live'; });
 function tick(){
   if(paused) return;
+  const before=M[cur]?.price;
   for(const s of symbols){ const u=M[s]; u.price=Math.max(.5,u.price*Math.exp(u.v/Math.sqrt(INTRA)*.5*gauss(Math.random)));
     const k=u.intra.length-1; u.intra[k]=u.price; u.i.h[k]=Math.max(u.i.h[k],u.price); u.i.l[k]=Math.min(u.i.l[k],u.price); u.i.v[k]+=Math.round(u.i.v[k]*.03*Math.random()); }
   for(const o of [...S.orders]){ const p=M[o.s].price;
@@ -2087,6 +2118,8 @@ function tick(){
   for(const a of [...S.alerts]){ const p=M[a.s].price;
     if((a.dir==='above'&&p>=a.px)||(a.dir==='below'&&p<=a.px)){ toast(`Alert: ${a.s} is ${a.dir} ${$(a.px)} (now ${$(p)})`); Sound.play('alert'); S.alerts=S.alerts.filter(x=>x.id!==a.id); save(); } }
   if(!P || el('player').hidden) renderTab(true);
+  // a faint tick as the stock you're watching moves, like a live terminal
+  if(tab==='trade' && !document.hidden && (!P||el('player').hidden) && before!=null) Sound.play(M[cur].price>=before?'up':'down');
 }
 setInterval(tick,2000);
 // a new 5-minute bar every 15 seconds until the session ends
@@ -2180,7 +2213,7 @@ function candleRow(n, seed, trend=.72){
   el('splashCandles').innerHTML=candleRow(34, 7);
   let gone=false;
   const done=()=>{ if(gone) return; gone=true; sp.classList.add('out'); setTimeout(()=>sp.remove(),700); try{ sessionStorage.setItem('toro.splash','1'); }catch(e){} };
-  sp.addEventListener('click',done); setTimeout(done, REDUCE?500:2600);
+  sp.addEventListener('click',done); setTimeout(done, REDUCE?500:4500);
 })();
 // Live charts redraw at ~30fps for the draw-in, pulse and scrub animations
 (function chartLoop(){ let last=0; const f=t=>{ if(!document.hidden && t-last>32){ last=t;

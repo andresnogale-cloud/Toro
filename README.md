@@ -23,7 +23,12 @@ Pure black, elegant and modern, in the style of a modern trading app. Gold is ke
   - Diamond lesson stops with a rotating ring.
 - **Fonts:** Figtree for the interface, JetBrains Mono for chart axes, and Cinzel for the TORO wordmark.
 - **Candlestick motion:** a faint gold candlestick chart scrolls slowly across the background, candles rise behind the logo on the opening screen, and a short "bull run" of candles grows when you finish a lesson.
-- **Sound:** soft tones generated in the browser, with no audio files. You hear them when you pick an answer, answer right or wrong, match a pair, finish a lesson, earn a badge, place a trade, trigger a price alert or switch tabs. The speaker button in the header mutes or unmutes, and your choice is remembered.
+- **Sound:** a futuristic trading-terminal sound set, generated live in the browser with no audio files:
+  - A power-up sweep and "market open" chime on your first tap of each visit. The opening screen says "Tap to enter".
+  - Digital ticks for taps and choices, a rising two-tone for correct answers and a "sell-off" down-sweep for wrong ones.
+  - An "order filled" arpeggio for trades, a terminal-style double ping for price alerts, and a synth rise and chord when a lesson ends.
+  - Faint ticks as the stock you're watching moves.
+  - The speaker button in the header mutes or unmutes.
 - **Reduced motion:** if the device asks for less motion, the animations switch off.
 
 ## Courses
