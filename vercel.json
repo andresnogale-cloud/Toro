@@ -76,6 +76,14 @@
     {
       "source": "/:path*/icons/:file",
       "destination": "/icons/:file"
+    },
+    {
+      "source": "/:path*/config.js",
+      "destination": "/config.js"
+    },
+    {
+      "source": "/:path*/vendor/:file",
+      "destination": "/vendor/:file"
     }
   ],
   "installCommand": "echo \"static site: nothing to install\"",

@@ -684,6 +684,23 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
 /* In the native app the system draws the status bar; keep content clear of it */
 .native .top{top:0;padding-top:env(safe-area-inset-top,0px)}
 @media (display-mode: standalone){ .top{top:0;padding-top:env(safe-area-inset-top,0px)} }
+.acct{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.acct-text{flex:1 1 280px}
+.acct-text p{margin:4px 0 0;font-size:14px}
+.acct .btn.cta{padding:10px 18px}
+.fc{display:flex;align-items:center;gap:8px;font-size:13px}
+.fc .tkr{color:var(--gold-hi);letter-spacing:.12em}
+.flist{display:grid;margin-top:10px}
+.frow{display:grid;grid-template-columns:22px 30px minmax(0,1fr) auto 70px 36px;gap:10px;align-items:center;padding:10px 6px;border-top:1px solid var(--line)}
+.frow.me{background:rgba(216,179,90,.06);border-radius:10px}
+.frow .rank{color:var(--muted);font-weight:700;text-align:right}
+.fname{display:grid;min-width:0}
+.fname b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fname small{color:var(--muted);font-size:12px}
+.fname .tkr{font-size:10.5px;padding:1px 6px}
+.fpx{font-weight:700}
+.frow .btn svg{width:14px;height:14px}
+@media (max-width:640px){ .frow{grid-template-columns:18px 26px minmax(0,1fr) auto 56px 30px;gap:8px} }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .emblem.draw path{stroke-dashoffset:0}
@@ -893,6 +910,19 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
       <div class="ranges" id="meRange" role="group" aria-label="Chart range"><button type="button" data-r="1W" aria-pressed="false">1W</button><button type="button" data-r="1M" aria-pressed="true">1M</button><button type="button" data-r="3M" aria-pressed="false">3M</button><button type="button" data-r="ALL" aria-pressed="false">All</button></div>
     </div>
     <div class="panel"><div class="kv me-kv" id="meStats"></div></div>
+    <div class="panel acct" id="acct" hidden></div>
+    <div class="panel" id="friends" hidden>
+      <div class="row between" style="margin-bottom:10px">
+        <h2>Friends market</h2>
+        <span class="muted fc">Your code <b class="tkr" id="myCode">——</b><button class="btn ghost sm" type="button" id="copyCode">Copy</button></span>
+      </div>
+      <form class="row" id="addFriend" autocomplete="off">
+        <input class="tin" id="friendCode" maxlength="6" placeholder="Friend’s code" aria-label="Friend’s code" style="width:170px;text-align:left;text-transform:uppercase">
+        <button class="btn" type="submit">Follow</button>
+        <span class="msg" id="friendMsg"></span>
+      </form>
+      <div class="flist" id="friendList"></div>
+    </div>
     <div class="two">
       <div class="panel" style="display:grid;gap:12px;align-content:start">
         <h2>What moves your stock</h2>
@@ -946,6 +976,7 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <canvas id="fx" aria-hidden="true"></canvas>
 
+<script src="config.js"></script>
 <script src="courses.js"></script>
 <script>
 (() => {
@@ -1067,7 +1098,8 @@ try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e){ S=null; }
 if(!S || typeof S.cash!=='number') S = {...starterTrade(), learn:S&&S.learn}; // keep learning progress even if trading data is missing
 S.learn = Object.assign(freshLearn(), S.learn||{});
 const Lr = () => S.learn;
-const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} };
+let saveHook = () => {};  // cloud sync plugs in here
+const save = () => { S.savedAt=Date.now(); try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} saveHook(); };
 
 /* ---------- Toasts ---------- */
 function toast(msg, icon){ const t=document.createElement('div'); t.className='toast'; t.innerHTML=(icon||'')+'<span></span>'; t.lastChild.textContent=msg; el('toasts').appendChild(t); setTimeout(()=>t.remove(),4200); }
@@ -1675,7 +1707,7 @@ el('meEdit').addEventListener('click',openNameEditor);
 /* ---------- Profile ---------- */
 function renderProfile(){
   const l=Lr(); const lessons=Object.keys(l.done).length;
-  renderMe(true);
+  renderMe(true); Cloud.render(); if(Cloud.user) Cloud.loadFriends();
   if(false) el('pstats').innerHTML = [
     [I.flame,'var(--flame)',streakNow(),'Day streak',`Best: ${l.streak.best}`],
     [I.bolt,'var(--gold)',l.xp,'Total XP',''],
@@ -2300,6 +2332,114 @@ function candleRow(n, seed, trend=.72){
   if(tab==='trade' && (!P||el('player').hidden)) drawStock(); if(tab==='portfolio') drawPort(); if(tab==='profile') drawMe(); } requestAnimationFrame(f); }; requestAnimationFrame(f); })();
 addEventListener('load',moveInd); document.fonts?.ready.then(moveInd);
 
+/* ---------- Accounts, sync and friends (Supabase) ----------
+   Off until config.js has a Supabase URL and anon key. Progress stays on the device either way. */
+const CFG = window.TORO_CONFIG || {};
+const Cloud = (()=>{
+  const on = !!(CFG.supabaseUrl && CFG.supabaseAnonKey);
+  let sb=null, user=null, timer=null, status='idle', lastSync=0;
+  const ABC='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const makeCode=()=>Array.from({length:6},()=>ABC[Math.floor(Math.random()*ABC.length)]).join('');
+  const ago=t=>{ const s=Math.round((Date.now()-t)/1000); return s<10?'just now':s<60?`${s}s ago`:s<3600?`${Math.round(s/60)} min ago`:`${Math.round(s/3600)} h ago`; };
+  function loadLib(){ return window.supabase ? Promise.resolve() : new Promise((res,rej)=>{ const sc=document.createElement('script'); sc.src='vendor/supabase.js'; sc.onload=res; sc.onerror=rej; document.head.appendChild(sc); }); }
+  async function init(){
+    if(!on){ render(); return; }
+    try{
+      await loadLib();
+      sb = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, {auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'pkce'}});
+      const {data} = await sb.auth.getSession(); user = data?.session?.user || null;
+      sb.auth.onAuthStateChange((ev, session)=>{ const was=user; user=session?.user||null; if(user && !was) firstSync(); if(!user) render(); });
+      saveHook = ()=>queue();
+      if(user) await firstSync(); else render();
+    }catch(e){ status='error'; render(); }
+  }
+  // On sign-in: keep whichever copy has more learning, then upload
+  async function firstSync(){
+    status='syncing'; render();
+    const {data, error} = await sb.from('app_state').select('state').eq('user_id', user.id).maybeSingle();
+    if(error){ status='error'; render(); return; }
+    const remote = data && data.state;
+    if(remote && remote.learn){
+      const lx=S.learn.xp||0, rx=remote.learn.xp||0;
+      if(rx>lx || (rx===lx && (remote.savedAt||0)>(S.savedAt||0))){
+        S = remote; S.learn = Object.assign(freshLearn(), S.learn||{});
+        try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+        toast('Progress loaded from your account', I.check); renderTab(); renderMeChip();
+      }
+    }
+    await push();
+  }
+  function queue(){ if(!sb||!user) return; clearTimeout(timer); timer=setTimeout(push, 2500); }
+  async function push(retry){
+    if(!sb||!user) return; clearTimeout(timer); status='syncing'; render();
+    if(!S.learn.friendCode){ S.learn.friendCode=makeCode(); try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+    const all=myStock(), last=all[all.length-1], prev=all[all.length-2]||last, now=new Date().toISOString();
+    const a = await sb.from('app_state').upsert({user_id:user.id, state:S, updated_at:now});
+    const b = await sb.from('profiles').upsert({id:user.id, name:myName(), ticker:myTicker(), friend_code:S.learn.friendCode,
+      price:+last.c.toFixed(2), day_change:+((last.c-prev.c)/prev.c*100).toFixed(2), xp:S.learn.xp, streak:streakNow(), league:TIERS[S.learn.tier], updated_at:now});
+    if(b.error && b.error.code==='23505' && !retry){ S.learn.friendCode=makeCode(); return push(true); }   // friend code taken: pick another
+    status = (a.error||b.error) ? 'error' : 'synced'; lastSync=Date.now(); render();
+    if(tab==='profile') loadFriends();
+  }
+  async function loadFriends(){
+    if(!sb||!user) return;
+    const f = await sb.from('follows').select('followee').eq('follower', user.id);
+    if(f.error){ el('friendList').innerHTML='<p class="empty">Couldn’t load friends. Check your connection.</p>'; return; }
+    const ids=[user.id, ...f.data.map(r=>r.followee)];
+    const p = await sb.from('profiles').select('id,name,ticker,price,day_change,streak').in('id', ids);
+    if(p.error) return;
+    const rows=[...p.data].sort((x,y)=>y.price-x.price);
+    el('friendList').innerHTML = rows.length<2
+      ? '<p class="empty">Follow a friend with their code to see their personal stock here. Share yours so they can follow you.</p>'
+      : rows.map((r,i)=>`<div class="frow ${r.id===user.id?'me':''}"><span class="rank">${i+1}</span><span class="me-av sm">${esc((r.name||'?')[0].toUpperCase())}</span>
+          <span class="fname"><b>${esc(r.name)}</b><small><span class="tkr">${esc(r.ticker)}</span> · ${r.streak||0}-day streak</small></span>
+          <span class="num fpx">${$(+r.price)}</span><span class="num ${cls(+r.day_change)}">${pct(+r.day_change)}</span>
+          ${r.id===user.id?'<span></span>':`<button class="btn ghost sm" type="button" data-unfollow="${r.id}" aria-label="Unfollow ${esc(r.name)}">${I.x}</button>`}</div>`).join('');
+  }
+  async function follow(code){
+    code=code.trim().toUpperCase(); const msg=el('friendMsg'); msg.className='msg';
+    if(code.length!==6){ msg.className='msg err'; msg.textContent='Codes are 6 characters.'; Sound.play('denied'); return; }
+    if(code===S.learn.friendCode){ msg.className='msg err'; msg.textContent='That’s your own code.'; Sound.play('denied'); return; }
+    const p = await sb.from('profiles').select('id,name').eq('friend_code', code).maybeSingle();
+    if(p.error || !p.data){ msg.className='msg err'; msg.textContent='No one has that code yet.'; Sound.play('denied'); return; }
+    const r = await sb.from('follows').insert({follower:user.id, followee:p.data.id});
+    if(r.error && r.error.code!=='23505'){ msg.className='msg err'; msg.textContent='Couldn’t follow right now. Try again.'; return; }
+    msg.textContent=`Following ${p.data.name}`; el('friendCode').value=''; Sound.play('placed'); loadFriends();
+  }
+  async function unfollow(id){ await sb.from('follows').delete().eq('follower', user.id).eq('followee', id); loadFriends(); }
+  function render(){
+    const box=el('acct'), fr=el('friends');
+    if(!on){ box.hidden=true; fr.hidden=true; return; }
+    box.hidden=false;
+    if(!user){
+      fr.hidden=true;
+      box.innerHTML=`<div class="acct-text"><h2>Sync across your devices</h2><p class="muted">Sign in to keep your lessons, practice account and personal stock on your phone and computer, and to follow friends’ stocks.</p></div>
+        <form class="row" id="acctForm"><input class="tin" id="acctEmail" type="email" required autocomplete="email" placeholder="you@email.com" aria-label="Email" style="width:250px;text-align:left">
+        <button class="btn cta" type="submit">Email me a sign-in link</button>${CFG.google && !NATIVE ? '<button class="btn" type="button" id="acctGoogle">Continue with Google</button>':''}</form>
+        <p class="msg" id="acctMsg" style="text-align:left"></p>`;
+      el('acctForm').addEventListener('submit',async e=>{ e.preventDefault(); const m=el('acctMsg'); m.className='msg'; m.textContent='Sending…';
+        const {error} = await sb.auth.signInWithOtp({email:el('acctEmail').value.trim(), options:{emailRedirectTo: NATIVE ? (CFG.siteUrl||location.origin)+'/profile' : location.origin+'/profile'}});
+        if(error){ m.className='msg err'; m.textContent='Couldn’t send the link. Check the email address and try again.'; Sound.play('denied'); }
+        else { m.textContent='Check your inbox. Open the link on this device to sign in.'; Sound.play('placed'); } });
+      el('acctGoogle')?.addEventListener('click',()=>sb.auth.signInWithOAuth({provider:'google', options:{redirectTo: location.origin+'/profile'}}));
+      return;
+    }
+    fr.hidden=false;
+    const st = status==='syncing' ? 'Syncing…' : status==='error' ? 'Sync paused. Your progress is saved on this device and will sync when you’re back online.' : `Synced ${lastSync?ago(lastSync):'just now'}`;
+    box.innerHTML=`<div class="acct-text"><h2>Your account</h2><p class="muted">${esc(user.email||'Signed in')} · <span class="${status==='error'?'down':''}">${st}</span></p></div>
+      <div class="row"><button class="btn" type="button" id="syncNow">Sync now</button><button class="btn ghost" type="button" id="signOut">Sign out</button></div>`;
+    el('syncNow').onclick=()=>push(); el('signOut').onclick=async()=>{ await sb.auth.signOut(); user=null; toast('Signed out. Your progress stays on this device.'); render(); };
+    el('myCode').textContent = S.learn.friendCode || '——';
+  }
+  el('addFriend').addEventListener('submit',e=>{ e.preventDefault(); if(sb&&user) follow(el('friendCode').value); });
+  el('friendList').addEventListener('click',e=>{ const b=e.target.closest('[data-unfollow]'); if(b) unfollow(b.dataset.unfollow); });
+  el('copyCode').addEventListener('click',()=>{ const c=S.learn.friendCode; if(!c) return; const fail=()=>toast(`Your code: ${c}`);
+    try{ navigator.clipboard.writeText(c).then(()=>toast('Friend code copied'),fail); }catch(e){ fail(); } });
+  // A sign-in link opened by the phone app arrives here as a universal link
+  async function handleUrl(u){ if(!sb) return; const code=u.searchParams.get('code'); if(code){ try{ await sb.auth.exchangeCodeForSession(code); }catch(e){} } }
+  return {init, render, loadFriends, handleUrl, get on(){ return on; }, get user(){ return user; }};
+})();
+
 /* App shell: offline support, install prompt, native deep links and back button */
 (function appShell(){
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
@@ -2319,7 +2459,7 @@ addEventListener('load',moveInd); document.fonts?.ready.then(moveInd);
   try{ PLUG.StatusBar?.setStyle({style:'DARK'}); PLUG.StatusBar?.setBackgroundColor?.({color:'#000000'}); }catch(e){}
   setTimeout(()=>{ try{ PLUG.SplashScreen?.hide(); }catch(e){} }, 300);
   // Universal links (https://your-domain/stock/LUMQ, /learn/supply, /profile) open the matching screen
-  PLUG.App?.addListener('appUrlOpen', ev=>{ try{ const u=new URL(ev.url);
+  PLUG.App?.addListener('appUrlOpen', ev=>{ try{ const u=new URL(ev.url); Cloud.handleUrl(u);
     const m=u.pathname.match(/\/(stock|learn)\/([A-Za-z]+)\/?$/), sec=u.pathname.match(/\/(learn|trade|portfolio|tools|profile)\/?$/);
     const h = m ? (m[1]==='stock' ? m[2].toUpperCase() : m[2]) : sec ? sec[1] : u.hash.slice(1);
     if(h) location.hash = h; }catch(e){} });
@@ -2334,5 +2474,6 @@ addEventListener('load',moveInd); document.fonts?.ready.then(moveInd);
 
 settleStreak(); settleLeague(); regenHearts();
 route();
+Cloud.init();
 })();
 </script>

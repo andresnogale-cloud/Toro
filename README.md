@@ -48,7 +48,7 @@ Pure black, elegant and modern, in the style of a modern trading app. Gold is ke
 | Marketing & Business | Marketing basics | Business by the numbers |
 | Global Supply Chains | How goods get to you | Risk and strategy |
 
-Each unit has 3 lessons and a unit review. Each lesson opens with a short tip, then asks 5 questions. That's 150 questions across 30 lessons.
+Each course has 4 units, and each unit has 3 lessons and a unit review. Each lesson opens with a short tip, then asks 5 questions. That's 300 questions across 60 lessons.
 
 ## How learning works
 
@@ -124,6 +124,28 @@ Before shipping, replace the placeholders:
 6. Configure your web host to serve `index.html` for those paths, so the links also work in a browser.
 
 The repo includes `.nojekyll` so GitHub Pages serves the `.well-known` folder.
+
+## Accounts, sync and friends
+
+Toro works fully without an account, saving everything on the device. With Supabase (the free tier is enough), learners can sign in with an email link, or with Google if you enable it. Their lessons, practice account and personal stock then sync across phone and web. They can also follow friends by a 6-character code and compare personal stocks in the **Friends market** on Profile.
+
+**Turn it on (about 10 minutes):**
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. In **SQL Editor**, run `supabase/schema.sql`. It creates the `profiles`, `app_state` and `follows` tables with row-level security.
+3. In **Authentication → URL Configuration**, set the Site URL to your Vercel address and add `https://your-domain/profile` to the redirect URLs.
+4. Copy **Project URL** and the **anon public** key from **Project Settings → API** into `config.js`.
+5. Optional: enable **Google** under **Authentication → Providers**, then set `google: true` in `config.js`.
+
+The accounts panel stays hidden until `config.js` is filled in.
+
+How the data is handled:
+
+- The anon key is designed to be public, and the security rules in `schema.sql` protect the data.
+- Progress (`app_state`) is private to each user.
+- The profile card (name, ticker, personal stock price, streak) is visible to other signed-in users, so friends can find each other.
+- When someone signs in on a new device, Toro keeps whichever copy has more learning progress.
+- The Supabase library is bundled in `vendor/supabase.js` (v2.117.2), so the phone apps don't depend on a CDN.
 
 ## Toro as a real app
 
