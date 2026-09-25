@@ -2,17 +2,45 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["TEAMID.com.example.toro"],
+        "appIDs": [
+          "TEAMID.com.example.toro"
+        ],
         "components": [
-          { "/": "/stock/*", "comment": "Open a stock page, e.g. /stock/LUMQ" },
-          { "/": "/portfolio", "comment": "Open the portfolio" },
-          { "/": "/tools", "comment": "Open the calculators" },
-          { "/": "/learn", "comment": "Open lessons and the daily quiz" }
+          {
+            "/": "/stock/*",
+            "comment": "Open a stock page, e.g. /stock/LUMQ"
+          },
+          {
+            "/": "/learn/*",
+            "comment": "Open a course path, e.g. /learn/supply"
+          },
+          {
+            "/": "/learn",
+            "comment": "Open the learning path"
+          },
+          {
+            "/": "/trade",
+            "comment": "Open the trading simulator"
+          },
+          {
+            "/": "/portfolio",
+            "comment": "Open the portfolio"
+          },
+          {
+            "/": "/tools",
+            "comment": "Open the calculators"
+          },
+          {
+            "/": "/profile",
+            "comment": "Open profile, badges and shop"
+          }
         ]
       }
     ]
   },
   "webcredentials": {
-    "apps": ["TEAMID.com.example.toro"]
+    "apps": [
+      "TEAMID.com.example.toro"
+    ]
   }
 }
