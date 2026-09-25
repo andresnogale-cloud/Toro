@@ -1,9 +1,11 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.example.toro",
+      "package_name": "com.toro.learn",
       "sha256_cert_fingerprints": [
         "REPLACE_WITH_YOUR_RELEASE_SIGNING_CERT_SHA256"
       ]

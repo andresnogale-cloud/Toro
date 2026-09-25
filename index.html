@@ -2,6 +2,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Toro teaches investing, trading, personal finance, marketing and global supply chains in bite-size lessons, then lets you practice with $10,000 of virtual cash.">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Toro">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Figtree:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap">
@@ -666,6 +674,14 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
 @media (max-width:1100px){ .me-chip #chipPx{display:none} }
 .me-hero,.rh-hero{background:#000}
 @media (max-width:640px){ .top-in{gap:6px} .meters{gap:0} .meter{padding:5px 5px} .me-chip .me-tk,.me-chip #chipPx,.me-chip #chipCh{display:none} .me-chip{padding:2px;border:0} .me-chip{padding:3px 8px 3px 3px} .me-kv{grid-template-columns:1fr 1fr} .rules>div{grid-template-columns:110px 1fr} .me-rating{text-align:left} #meChart{height:230px} }
+.getapp{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.getapp img{width:64px;height:64px;border-radius:15px;box-shadow:0 0 0 1px var(--line-2)}
+.getapp>div{flex:1 1 240px}
+.getapp h2{margin-bottom:4px}
+.getapp p{margin:0;font-size:14px}
+/* In the native app the system draws the status bar; keep content clear of it */
+.native .top{top:0;padding-top:env(safe-area-inset-top,0px)}
+@media (display-mode: standalone){ .top{top:0;padding-top:env(safe-area-inset-top,0px)} }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .emblem.draw path{stroke-dashoffset:0}
@@ -909,6 +925,11 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
     </div>
     <div class="card" style="display:grid;gap:14px"><h2>Course progress</h2><div class="cprog" id="cprog"></div></div>
     <div class="card" style="display:grid;gap:14px"><h2>Badges</h2><div class="badges" id="badges"></div></div>
+    <div class="panel getapp" id="getApp">
+      <img src="icons/icon-192.png" alt="" width="64" height="64">
+      <div><h2>Toro on your phone</h2><p class="muted" id="getAppTxt">Install Toro to your home screen. It opens full screen and works offline.</p></div>
+      <button class="btn cta" type="button" id="installBtn" hidden>Install app</button>
+    </div>
     <div class="row" style="justify-content:flex-end" id="lresetRow"><button class="btn ghost" id="lresetBtn" type="button">Reset learning progress</button></div>
   </section>
 
@@ -1047,6 +1068,23 @@ const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e
 /* ---------- Toasts ---------- */
 function toast(msg, icon){ const t=document.createElement('div'); t.className='toast'; t.innerHTML=(icon||'')+'<span></span>'; t.lastChild.textContent=msg; el('toasts').appendChild(t); setTimeout(()=>t.remove(),4200); }
 
+/* ---------- Native app bridge (Capacitor) and installable web app ---------- */
+const CAP = window.Capacitor, NATIVE = !!(CAP && CAP.isNativePlatform && CAP.isNativePlatform()), PLUG = (CAP && CAP.Plugins) || {};
+if(NATIVE) document.documentElement.classList.add('native');
+// Small vibrations: native haptics in the app, a light buzz on Android browsers
+function haptic(k){
+  try{
+    if(NATIVE && PLUG.Haptics){
+      if(k==='correct'||k==='complete') PLUG.Haptics.notification({type:'SUCCESS'});
+      else if(k==='wrong') PLUG.Haptics.notification({type:'ERROR'});
+      else if(k==='trade'||k==='chime') PLUG.Haptics.impact({style:'MEDIUM'});
+      else if(k==='select'||k==='pair') PLUG.Haptics.impact({style:'LIGHT'});
+    } else if(navigator.vibrate && matchMedia('(pointer:coarse)').matches){
+      if(k==='wrong') navigator.vibrate([18,40,18]); else if(k==='correct'||k==='trade') navigator.vibrate(12);
+    }
+  }catch(e){}
+}
+
 /* ---------- Sound: soft synthesised tones, no audio files ---------- */
 const Sound=(()=>{
   let ctx=null, out=null;
@@ -1080,7 +1118,7 @@ const Sound=(()=>{
     alert:   ()=>{ tone(988,0,.18,{gain:.045}); tone(988,.22,.3,{gain:.04}); },
   };
   return {
-    play(k){ if(enabled() && SFX[k]) try{ SFX[k](); }catch(e){} },
+    play(k){ haptic(k); if(enabled() && SFX[k]) try{ SFX[k](); }catch(e){} },
     on: enabled,
     toggle(){ S.sound = !enabled(); save(); if(enabled()) SFX.chime(); return enabled(); }
   };
@@ -2148,6 +2186,38 @@ function candleRow(n, seed, trend=.72){
 (function chartLoop(){ let last=0; const f=t=>{ if(!document.hidden && t-last>32){ last=t;
   if(tab==='trade' && (!P||el('player').hidden)) drawStock(); if(tab==='portfolio') drawPort(); if(tab==='profile') drawMe(); } requestAnimationFrame(f); }; requestAnimationFrame(f); })();
 addEventListener('load',moveInd); document.fonts?.ready.then(moveInd);
+
+/* App shell: offline support, install prompt, native deep links and back button */
+(function appShell(){
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const ownSite = location.protocol==='https:' || location.hostname==='localhost' || location.hostname==='127.0.0.1';
+  if(!NATIVE && ownSite && 'serviceWorker' in navigator){
+    addEventListener('load',()=>{ navigator.serviceWorker.register('/sw.js').catch(()=>{}); });
+  }
+  // Install prompt (Chrome, Edge, Android); iPhone gets Share-sheet instructions
+  let deferred=null; const btn=el('installBtn'), txt=el('getAppTxt');
+  if(NATIVE || standalone){ el('getApp').hidden=true; }
+  else if(/iphone|ipad|ipod/i.test(navigator.userAgent)){ txt.textContent='On iPhone: tap the Share button in Safari, then “Add to Home Screen”. Toro opens full screen and works offline.'; }
+  addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferred=e; btn.hidden=false; });
+  btn.addEventListener('click',async()=>{ if(!deferred) return; deferred.prompt(); const r=await deferred.userChoice.catch(()=>null); deferred=null; btn.hidden=true; if(r&&r.outcome==='accepted') toast('Toro is on your home screen', I.check); });
+  addEventListener('appinstalled',()=>{ el('getApp').hidden=true; });
+  if(!NATIVE) return;
+  // Native: black status bar, hide the launch screen once the app is drawn
+  try{ PLUG.StatusBar?.setStyle({style:'DARK'}); PLUG.StatusBar?.setBackgroundColor?.({color:'#000000'}); }catch(e){}
+  setTimeout(()=>{ try{ PLUG.SplashScreen?.hide(); }catch(e){} }, 300);
+  // Universal links (https://your-domain/stock/LUMQ, /learn/supply, /profile) open the matching screen
+  PLUG.App?.addListener('appUrlOpen', ev=>{ try{ const u=new URL(ev.url);
+    const m=u.pathname.match(/\/(stock|learn)\/([A-Za-z]+)\/?$/), sec=u.pathname.match(/\/(learn|trade|portfolio|tools|profile)\/?$/);
+    const h = m ? (m[1]==='stock' ? m[2].toUpperCase() : m[2]) : sec ? sec[1] : u.hash.slice(1);
+    if(h) location.hash = h; }catch(e){} });
+  // Android back button: close what's open, then go back to Learn, then leave
+  PLUG.App?.addListener('backButton', ()=>{
+    if(P && !el('player').hidden) el('pX').click();
+    else if(!el('sheet').hidden) closeSheet();
+    else if(tab!=='learn') showTab('learn');
+    else PLUG.App.exitApp();
+  });
+})();
 
 settleStreak(); settleLeague(); regenHearts();
 route();

@@ -113,6 +113,54 @@ Before shipping, replace the placeholders:
 
 The repo includes `.nojekyll` so GitHub Pages serves the `.well-known` folder.
 
+## Toro as a real app
+
+Toro ships three ways from this one codebase:
+
+| | How people get it | What's in this repo |
+| --- | --- | --- |
+| **Website** | Visit your Vercel address | `index.html`, `courses.js`, `assets/`, `vercel.json` |
+| **Installable web app** | "Install app" in Chrome or Android, or Share → Add to Home Screen on iPhone | `manifest.webmanifest`, `sw.js` (works offline), `icons/` |
+| **iPhone and Android apps** | App Store and Google Play | `ios/`, `android/`, `capacitor.config.json` (Capacitor 8) |
+
+The installable app gets:
+
+- A home-screen icon made from the Toro logo.
+- A full-screen black launch.
+- Offline use after the first visit.
+- Shortcuts to Learn, Trade and My stock.
+- An "Install app" card at the bottom of the Profile page.
+
+Inside the iPhone and Android apps, Toro also gets:
+
+- Native haptics on answers and trades.
+- A black status bar.
+- A launch screen.
+- Universal links: `https://your-domain/stock/LUMQ` or `/learn/supply` opens the app on that screen.
+- The Android back button closes the lesson or sheet, then returns to Learn.
+
+### Build the phone apps
+
+You need a Mac with Xcode for iPhone, and Android Studio for Android.
+
+```bash
+npm install
+npm run ios       # builds www/, syncs, and opens Xcode
+npm run android   # builds www/, syncs, and opens Android Studio
+```
+
+In Xcode, choose your team under **Signing & Capabilities** and press Run. In Android Studio, press Run. After changing `index.html` or `courses.js`, run `npm run sync`. To regenerate icons and launch screens from `resources/`, run `npm run icons`.
+
+### Before submitting to the stores
+
+1. **App ID.** It's `com.toro.learn`. Change it in `capacitor.config.json`, `android/app/build.gradle` and in Xcode if you want your own.
+2. **Accounts.** You need an Apple Developer Program membership ($99/year) and a Google Play Console account ($25 one-time).
+3. **Universal links.**
+   - Replace `YOUR-DOMAIN` in `android/app/src/main/AndroidManifest.xml` and `ios/App/App/App.entitlements`.
+   - In Xcode, add the **Associated Domains** capability.
+   - Fill in your Team ID and signing fingerprint in `.well-known/`.
+4. **Store listing.** You need screenshots, a privacy policy URL and an age rating. Toro stores everything on the device and collects no personal data. In the finance category, the app stores will look for the "practice only, not financial advice" wording, which the app already shows.
+
 ## Deploy on Vercel
 
 Toro is a static site, so there's no build step. `vercel.json` makes the universal-link paths (`/learn/supply`, `/stock/LUMQ`, `/portfolio` …) serve the app. It also serves the Apple association file as JSON.

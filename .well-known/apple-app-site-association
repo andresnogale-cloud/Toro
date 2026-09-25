@@ -3,7 +3,7 @@
     "details": [
       {
         "appIDs": [
-          "TEAMID.com.example.toro"
+          "TEAMID.com.toro.learn"
         ],
         "components": [
           {
@@ -40,7 +40,7 @@
   },
   "webcredentials": {
     "apps": [
-      "TEAMID.com.example.toro"
+      "TEAMID.com.toro.learn"
     ]
   }
 }
