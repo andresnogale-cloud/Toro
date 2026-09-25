@@ -1,0 +1,18 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["TEAMID.com.example.toro"],
+        "components": [
+          { "/": "/stock/*", "comment": "Open a stock page, e.g. /stock/LUMQ" },
+          { "/": "/portfolio", "comment": "Open the portfolio" },
+          { "/": "/tools", "comment": "Open the calculators" },
+          { "/": "/learn", "comment": "Open lessons and the daily quiz" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["TEAMID.com.example.toro"]
+  }
+}
