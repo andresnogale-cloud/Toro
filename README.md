@@ -113,6 +113,16 @@ Before shipping, replace the placeholders:
 
 The repo includes `.nojekyll` so GitHub Pages serves the `.well-known` folder.
 
+## Deploy on Vercel
+
+Toro is a static site, so there's no build step. `vercel.json` makes the universal-link paths (`/learn/supply`, `/stock/LUMQ`, `/portfolio` …) serve the app. It also serves the Apple association file as JSON.
+
+1. Go to [vercel.com/new](https://vercel.com/new) and sign in with GitHub.
+2. Import `andresnogale-cloud/Toro`. If it isn't listed, choose **Adjust GitHub App Permissions** and give Vercel access to the repo.
+3. Leave **Framework Preset** as *Other*, with no build command and the output directory as the repo root. Click **Deploy**.
+
+Every push to the branch redeploys automatically.
+
 See [IDEAS.md](IDEAS.md) for the roadmap.
 
 ---

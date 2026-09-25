@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/.well-known/apple-app-site-association",
+      "headers": [{ "key": "Content-Type", "value": "application/json" }]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
+    }
+  ],
+  "rewrites": [
+    { "source": "/:section(learn|trade|portfolio|tools|profile)", "destination": "/index.html" },
+    { "source": "/learn/:course", "destination": "/index.html" },
+    { "source": "/stock/:symbol", "destination": "/index.html" },
+    { "source": "/:path*/courses.js", "destination": "/courses.js" },
+    { "source": "/:path*/assets/:file", "destination": "/assets/:file" }
+  ]
+}
