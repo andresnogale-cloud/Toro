@@ -1,7 +1,7 @@
 /* Toro service worker: the app works offline after the first visit.
    App files: network first (so updates arrive), falling back to the cache.
    Fonts: cache first. Bump VERSION to force a fresh cache. */
-const VERSION = 'toro-v2';
+const VERSION = 'toro-v3';
 const SHELL = ['/', '/index.html', '/courses.js', '/config.js', '/manifest.webmanifest',
   '/assets/toro-full.png', '/assets/toro-emb.png', '/assets/toro-word.png',
   '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png', '/icons/favicon-32.png'];
@@ -21,6 +21,7 @@ self.addEventListener('fetch', e => {
     return;
   }
   if (url.origin !== location.origin) return;
+  if (url.pathname.startsWith('/api/')) return;   // market data: always live, the app keeps its own last-prices copy
   // App routes like /learn/supply or /stock/LUMQ all serve the same page
   const isPage = req.mode === 'navigate';
   e.respondWith(

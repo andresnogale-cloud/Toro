@@ -88,7 +88,7 @@ Your name, ticker, price and today's move also show in the header. Clicking them
 
 ## Practice trading
 
-- 13 fictional companies plus the TXM index fund. Prices update every 2 seconds.
+- 15 real companies plus the SPY S&P 500 ETF: Apple, Microsoft, NVIDIA, Amazon, Tesla, Nike, Coca-Cola, JPMorgan Chase, Visa, Johnson & Johnson, Moderna, ExxonMobil, Boeing, FedEx and UPS. Real quotes when market data is connected (see below), clearly labeled demo prices otherwise.
 - Market and limit orders, fractional shares, price alerts and a watchlist.
 - Charts for 1D, 1W, 1M, 3M and 1Y.
 - Portfolio with allocation by sector, a diversification score and trade history.
@@ -106,8 +106,8 @@ Edit `courses.js`. For multiple choice (`MC`) and fill in the blank (`FILL`), pu
 | --- | --- |
 | `#learn`, `#trade`, `#portfolio`, `#tools`, `#profile` | That section |
 | `#invest`, `#trading`, `#money`, `#biz`, `#supply` | That course's path |
-| `#LUMQ` | The Lumiq Semiconductors stock page |
-| `/learn/supply`, `/stock/LUMQ`, `/portfolio` … | The same screens, on a real domain |
+| `#AAPL` | The Apple stock page |
+| `/learn/supply`, `/stock/AAPL`, `/portfolio` … | The same screens, on a real domain |
 
 `.well-known/` holds the files iOS and Android check before opening those links in a native app:
 
@@ -124,6 +124,35 @@ Before shipping, replace the placeholders:
 6. Configure your web host to serve `index.html` for those paths, so the links also work in a browser.
 
 The repo includes `.nojekyll` so GitHub Pages serves the `.well-known` folder.
+
+## Real market data
+
+With market data connected, the Trade, Portfolio and Tools tabs use **real prices**:
+
+- Live quotes from the IEX exchange via [Alpaca](https://alpaca.markets), refreshed every 15 seconds.
+- Real 5-minute bars for today and daily bars for the past year.
+- The market's open and closed status. When the market is closed, Toro shows the last session.
+
+The data comes through two small serverless functions in `api/` (`quotes.js`, `bars.js`), so the key never reaches the browser. They validate input and cache briefly at Vercel's edge, so many visitors share each request.
+
+**Turn it on (about 5 minutes):**
+
+1. Create a free account at [alpaca.markets](https://alpaca.markets). Paper trading is fine, since you only need the data.
+2. Under **API Keys**, generate a key and copy the key ID and secret.
+3. In Vercel, open **Project → Settings → Environment Variables** and add `ALPACA_KEY_ID` and `ALPACA_SECRET_KEY`. Then redeploy.
+4. For the phone apps, set `siteUrl` in `config.js` to your live site.
+
+How Toro handles the three data states:
+
+| State | What you see |
+| --- | --- |
+| **Live** | Real prices, and a "Live" or "Market closed" badge |
+| **Offline** | The last real prices this device saw, with the time. Trading pauses until data is back. |
+| **Demo** | The same companies with simulated prices, labeled "Demo prices" everywhere. Used when no data source is available, such as in the Claude preview. |
+
+When real prices switch on for the first time, practice positions bought at demo prices go back to cash at cost, so every trade after that uses real prices.
+
+The free IEX feed covers one exchange, so prices can differ slightly from the consolidated national price, and volumes are lower. Before launching publicly, check Alpaca's market-data terms for showing data to other people. A paid plan may be needed for wide public display.
 
 ## Accounts, sync and friends
 
@@ -170,7 +199,7 @@ Inside the iPhone and Android apps, Toro also gets:
 - Native haptics on answers and trades.
 - A black status bar.
 - A launch screen.
-- Universal links: `https://your-domain/stock/LUMQ` or `/learn/supply` opens the app on that screen.
+- Universal links: `https://your-domain/stock/AAPL` or `/learn/supply` opens the app on that screen.
 - The Android back button closes the lesson or sheet, then returns to Learn.
 
 ### Build the phone apps
@@ -197,7 +226,7 @@ In Xcode, choose your team under **Signing & Capabilities** and press Run. In An
 
 ## Deploy on Vercel
 
-Toro is a static site, so there's no build step. `vercel.json` makes the universal-link paths (`/learn/supply`, `/stock/LUMQ`, `/portfolio` …) serve the app. It also serves the Apple association file as JSON.
+Toro is a static site, so there's no build step. `vercel.json` makes the universal-link paths (`/learn/supply`, `/stock/AAPL`, `/portfolio` …) serve the app. It also serves the Apple association file as JSON.
 
 1. Go to [vercel.com/new](https://vercel.com/new) and sign in with GitHub.
 2. Import `andresnogale-cloud/Toro`. If it isn't listed, choose **Adjust GitHub App Permissions** and give Vercel access to the repo.
@@ -209,4 +238,4 @@ See [IDEAS.md](IDEAS.md) for the roadmap.
 
 ---
 
-Toro is for learning. Companies are fictional, prices are simulated, league players are simulated, and nothing here is financial advice.
+Toro is for learning, with practice money only. Market data may be delayed; demo prices are simulated and labeled. League players are simulated. Nothing here is financial advice.

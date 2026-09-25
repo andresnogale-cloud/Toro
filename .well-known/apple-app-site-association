@@ -8,7 +8,7 @@
         "components": [
           {
             "/": "/stock/*",
-            "comment": "Open a stock page, e.g. /stock/LUMQ"
+            "comment": "Open a stock page, e.g. /stock/AAPL"
           },
           {
             "/": "/learn/*",

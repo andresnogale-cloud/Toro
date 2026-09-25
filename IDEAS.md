@@ -37,7 +37,7 @@ Toro teaches money, markets and business in bite-size lessons, then lets you pra
 - **Speaking the lesson aloud** with text-to-speech, for accessibility.
 - **Streak calendar** showing which days you practiced.
 - **Portfolio value chart** built from daily snapshots.
-- **Recurring buys** in the simulator ("$50 of TXM every Monday") to practice dollar-cost averaging.
+- **Recurring buys** in the simulator ("$50 of SPY every Monday") to practice dollar-cost averaging.
 - **Share cards** for streaks, badges and trades, each linking back to Toro with a universal link.
 - **Sound effects and haptics** for right and wrong answers in the native app.
 
@@ -59,12 +59,12 @@ Toro teaches money, markets and business in bite-size lessons, then lets you pra
 - **Native apps.** Wrap the web app with Capacitor or rebuild in React Native. The `.well-known` files already cover universal links.
 - **AI tutor.** Explains a wrong answer in different words, answers follow-up questions, and makes new practice questions from your weak spots.
 - **Classroom and team mode.** Teachers and managers assign courses and see progress. A strong fit for schools, business programs and logistics companies training new staff.
-- **Real market data in delayed mode.** Offer it as a second mode next to the fictional market. Needs a licensing review.
+- **More markets.** Add stock search beyond the 16 built-in tickers, crypto and international exchanges, and news headlines per stock. Real market data is already built in (see README).
 - **Certificates.** A shareable certificate for finishing a course, starting with Global Supply Chains for career changers.
 
 ## Guardrails to keep
 
-- Always label simulated prices, fictional companies and simulated league players.
+- Always label demo prices and simulated league players, and show the market-data source.
 - Never present anything as financial advice.
 - Keep lesson facts reviewed by someone with domain expertise before scaling content.
 - If real data or real money is ever added, get legal and compliance review first.

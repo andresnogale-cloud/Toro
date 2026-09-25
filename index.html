@@ -701,6 +701,10 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
 .fpx{font-weight:700}
 .frow .btn svg{width:14px;height:14px}
 @media (max-width:640px){ .frow{grid-template-columns:18px 26px minmax(0,1fr) auto 56px 30px;gap:8px} }
+.status.demo .dot{background:var(--gold);animation:none}
+.status.closed .dot{background:var(--muted);animation:none}
+.data-note{font-size:12px;color:var(--muted);margin:-8px 2px 0;font-weight:600}
+.mkt-loading #v-trade .chartbox,.mkt-loading #v-trade .px-big,.mkt-loading #v-trade .px-chg,.mkt-loading .tape,.mkt-loading #list .pxc,.mkt-loading #v-portfolio .rh-hero{opacity:.12;transition:opacity .4s}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .emblem.draw path{stroke-dashoffset:0}
@@ -768,13 +772,14 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
 
   <!-- TRADE -->
   <section class="view" id="v-trade" hidden>
-    <div class="tape" id="tape" aria-label="Live prices"><div class="tape-track" id="tapeTrack"></div></div>
+    <div class="tape" id="tape" aria-label="Prices"><div class="tape-track" id="tapeTrack"></div></div>
+    <p class="data-note" id="dataNote"></p>
     <div class="term">
       <div class="term-main">
       <div class="panel chart-panel">
         <div class="sym-head">
           <div>
-            <div class="sym-line"><span class="tkr" id="tSym">TXM</span><span class="tname" id="tName"></span><span class="tag" id="tSec"></span></div>
+            <div class="sym-line"><span class="tkr" id="tSym">SPY</span><span class="tname" id="tName"></span><span class="tag" id="tSec"></span></div>
             <div class="px-big odo num" id="tPx"></div>
             <div class="px-chg" id="tChg"></div>
           </div>
@@ -967,7 +972,7 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
     <div class="row" style="justify-content:flex-end" id="lresetRow"><button class="btn ghost" id="lresetBtn" type="button">Reset learning progress</button></div>
   </section>
 
-  <p class="disclaimer">Toro is for learning. Companies are fictional, prices are simulated, and league players are simulated. Nothing here is financial advice.</p>
+  <p class="disclaimer" id="disclaimer">Toro is for learning, with practice money only. Nothing here is financial advice.</p>
 </main>
 
 <div class="scrim" id="scrim" hidden></div>
@@ -1016,24 +1021,31 @@ function emblem(cls='', style=''){
 }
 const MASCOT = emblem('mascot');
 
-/* ---------- Market universe (fictional) ---------- */
+/* ---------- Market universe: real companies ----------
+   With market data connected (api/ on your site), prices are real IEX quotes via Alpaca.
+   Otherwise Toro runs in demo mode: p is only a starting point for simulated, clearly labeled prices. */
 const UNIVERSE = [
-  {s:'TXM',  n:'Toro Total Market Index', sec:'Index fund', p:100.00, v:.009, pe:null, dy:1.6, about:'Tracks every company listed on Toro, weighted by size. One purchase spreads your money across the whole market.'},
-  {s:'LUMQ', n:'Lumiq Semiconductors',   sec:'Technology', p:318.40, v:.024, pe:41.2, dy:0,   about:'Designs low-power AI chips for phones and data centers.'},
-  {s:'PLSR', n:'Pulsar Cloud',           sec:'Technology', p:211.00, v:.021, pe:58.7, dy:0,   about:'Rents computing and storage to businesses by the hour.'},
-  {s:'KSTL', n:'Kestrel Aerospace',      sec:'Industrials',p:142.50, v:.016, pe:22.4, dy:1.1, about:'Builds regional jets and satellite launch hardware.'},
-  {s:'SLTW', n:'Saltwater Shipping',     sec:'Industrials',p:19.40,  v:.019, pe:9.8,  dy:4.2, about:'Operates container ships on Pacific and Atlantic routes. Its profits rise and fall with global trade volumes and freight rates.'},
-  {s:'MRDH', n:'Meridian Health',        sec:'Healthcare', p:67.90,  v:.012, pe:18.9, dy:2.3, about:'Runs clinics and a pharmacy network across 14 states.'},
-  {s:'QNTB', n:'Quanta Bio',             sec:'Healthcare', p:12.75,  v:.038, pe:null, dy:0,   about:'Early-stage biotech with two gene therapies in trials. Volatile.'},
-  {s:'NOVK', n:'Nova Bank',              sec:'Financials', p:41.25,  v:.014, pe:11.3, dy:3.4, about:'Consumer bank focused on mobile-first checking and small loans.'},
-  {s:'ORCF', n:'Orchard Foods',          sec:'Consumer',   p:28.60,  v:.010, pe:16.1, dy:2.9, about:'Makes snacks, juices and frozen meals sold in grocery stores.'},
-  {s:'VYGX', n:'Voyager Travel',         sec:'Consumer',   p:73.80,  v:.020, pe:27.5, dy:.4,  about:'Online booking for flights, hotels and tours.'},
-  {s:'AURG', n:'Aurora Grid Energy',     sec:'Energy',     p:84.20,  v:.017, pe:19.6, dy:2.0, about:'Builds and operates wind and solar farms with battery storage.'},
-  {s:'RVLM', n:'Revolt Motors',          sec:'Energy',     p:96.30,  v:.029, pe:88.0, dy:0,   about:'Electric pickup trucks and home charging equipment.'},
-  {s:'TRRM', n:'Terra Mining',           sec:'Materials',  p:54.10,  v:.018, pe:13.7, dy:3.1, about:'Mines copper and lithium used in batteries and wiring.'},
+  {s:'SPY',  n:'SPDR S&P 500 ETF',        sec:'Index fund',  p:560, v:.009, about:'An exchange-traded fund that tracks the S&P 500, about 500 of the largest US companies. One purchase spreads your money across the market.'},
+  {s:'AAPL', n:'Apple',                   sec:'Technology',  p:230, v:.016, about:'Designs the iPhone, Mac, iPad and Apple Watch, and runs services like the App Store, iCloud and Apple Music.'},
+  {s:'MSFT', n:'Microsoft',               sec:'Technology',  p:430, v:.014, about:'Makes Windows and Office, and runs the Azure cloud platform, LinkedIn and Xbox.'},
+  {s:'NVDA', n:'NVIDIA',                  sec:'Technology',  p:170, v:.030, about:'Designs graphics processors and the chips that power much of today’s AI computing.'},
+  {s:'AMZN', n:'Amazon',                  sec:'Consumer',    p:215, v:.019, about:'Runs the Amazon online store and Prime, and Amazon Web Services (AWS), a leading cloud provider.'},
+  {s:'TSLA', n:'Tesla',                   sec:'Consumer',    p:320, v:.035, about:'Makes electric cars and battery storage systems for homes and power grids. Known for large price swings.'},
+  {s:'NKE',  n:'Nike',                    sec:'Consumer',    p:75,  v:.018, about:'Designs athletic shoes, clothing and equipment, made mostly by contract factories in Asia and sold worldwide.'},
+  {s:'KO',   n:'Coca-Cola',               sec:'Consumer',    p:70,  v:.008, about:'Sells soft drinks, water, juices and coffee in more than 200 countries, and has paid a dividend for decades.'},
+  {s:'JPM',  n:'JPMorgan Chase',          sec:'Financials',  p:250, v:.014, about:'One of the largest US banks, offering consumer banking, credit cards, lending and investment banking.'},
+  {s:'V',    n:'Visa',                    sec:'Financials',  p:340, v:.012, about:'Runs one of the world’s largest card payment networks. It earns fees on transactions rather than lending money.'},
+  {s:'JNJ',  n:'Johnson & Johnson',       sec:'Healthcare',  p:160, v:.009, about:'Develops prescription medicines and medical devices.'},
+  {s:'MRNA', n:'Moderna',                 sec:'Healthcare',  p:30,  v:.040, about:'Biotech company known for its mRNA vaccines. Its stock tends to swing far more than the market.'},
+  {s:'XOM',  n:'ExxonMobil',              sec:'Energy',      p:112, v:.015, about:'Explores for, produces and refines oil and natural gas, and makes chemicals.'},
+  {s:'BA',   n:'Boeing',                  sec:'Industrials', p:210, v:.022, about:'Builds commercial airplanes, defense systems and space hardware.'},
+  {s:'FDX',  n:'FedEx',                   sec:'Industrials', p:250, v:.018, about:'Moves packages and freight worldwide by air and ground. Its results often reflect the health of global trade.'},
+  {s:'UPS',  n:'UPS',                     sec:'Industrials', p:100, v:.015, about:'Delivers packages worldwide and runs supply-chain, freight and logistics services.'},
 ];
+const INDEX_SYM = 'SPY';
 const SECTOR_COLORS = {'Index fund':'#8A94A0','Technology':'#3F7CD6','Industrials':'#C8883A','Healthcare':'#2FA38A','Financials':'#7A5CC4','Consumer':'#D0607A','Energy':'#5BA84A','Materials':'#9C7B5B','Cash':'#C9CFD4'};
-const START_CASH = 10000, DAYS = 260, INTRA = 78;
+const START_CASH = 10000, INTRA = 78;
+let DAYS = 260;   // trading days of daily history; replaced by the real count in live mode
 
 /* ---------- Random ---------- */
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -1047,7 +1059,7 @@ const dkey = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-
 const addDays = (d,n) => { const x=new Date(d); x.setDate(x.getDate()+n); return x; };
 const TODAY = dkey(today), YESTERDAY = dkey(addDays(today,-1));
 const weekStart = d => addDays(d, -((d.getDay()+6)%7));
-const tradingDays = (() => { const out=[]; let d=addDays(today,-1);
+let tradingDays = (() => { const out=[]; let d=addDays(today,-1);
   while(out.length<DAYS){ const w=d.getDay(); if(w!==0&&w!==6) out.unshift(new Date(d)); d=addDays(d,-1);} return out; })();
 const barTime = i => { const m=9*60+30+i*5; return `${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}`; };
 
@@ -1086,11 +1098,7 @@ const css = name => getComputedStyle(document.documentElement).getPropertyValue(
 /* ---------- State (this browser only) ---------- */
 const KEY='toro.v1';
 function starterTrade(){
-  const pos = {TXM:18, LUMQ:3, ORCF:25};
-  const holdings={}; let cash=START_CASH; const txns=[];
-  for(const [s,q] of Object.entries(pos)){ const px=M[s].daily[DAYS-40]; holdings[s]={qty:q,cost:q*px}; cash-=q*px;
-    txns.push({t:tradingDays[DAYS-40].getTime(),s,side:'buy',qty:q,px}); }
-  return {cash, holdings, txns, watch:['LUMQ','AURG','QNTB'], alerts:[{id:1,s:'AURG',dir:'above',px:+(M.AURG.p*1.02).toFixed(2)}], orders:[], starter:true, seq:10};
+  return {cash:START_CASH, holdings:{}, txns:[], watch:['AAPL','NVDA','KO'], alerts:[], orders:[], starter:false, seq:10};
 }
 const freshLearn = () => ({course:'invest', done:{}, xp:0, days:{}, streak:{count:0,last:null,best:0,freezes:0}, hearts:5, heartAt:0, gems:25, goal:20, badges:[], tier:0, week:dkey(weekStart(today)), perfect:0});
 let S;
@@ -1098,6 +1106,11 @@ try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e){ S=null; }
 if(!S || typeof S.cash!=='number') S = {...starterTrade(), learn:S&&S.learn}; // keep learning progress even if trading data is missing
 S.learn = Object.assign(freshLearn(), S.learn||{});
 const Lr = () => S.learn;
+// Earlier versions used made-up companies. Positions in them go back to cash at cost.
+const migrated = (()=>{ const gone=Object.keys(S.holdings||{}).filter(k=>!M[k]); if(!gone.length && (S.watch||[]).every(k=>M[k])) return 0;
+  for(const k of gone){ S.cash+=S.holdings[k].cost; delete S.holdings[k]; }
+  S.watch=(S.watch||[]).filter(k=>M[k]); S.orders=(S.orders||[]).filter(o=>M[o.s]); S.alerts=(S.alerts||[]).filter(a=>M[a.s]);
+  if(!M[S.sel]) S.sel='SPY'; S.starter=false; return gone.length; })();
 let saveHook = () => {};  // cloud sync plugs in here
 const save = () => { S.savedAt=Date.now(); try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} saveHook(); };
 
@@ -1876,31 +1889,31 @@ function divScore(){
   const idx=(bySec['Index fund']||0)/inv; const rest=Object.entries(bySec).filter(([k])=>k!=='Index fund');
   const restTot=rest.reduce((a,[,v])=>a+v,0); const hhi=restTot?rest.reduce((a,[,v])=>a+(v/restTot)**2,0):1;
   const secScore=restTot?(1-hhi)/(1-1/7):0;
-  const biggest=Math.max(0,...Object.entries(S.holdings).filter(([s])=>s!=='TXM').map(([s,h])=>h.qty*M[s].price/inv));
+  const biggest=Math.max(0,...Object.entries(S.holdings).filter(([s])=>s!==INDEX_SYM).map(([s,h])=>h.qty*M[s].price/inv));
   return {score:Math.round(100*Math.min(1, idx + (1-idx)*secScore*(1-Math.max(0,biggest-.25)))), bySec, inv, biggest};
 }
 
 /* Series for charts */
-const RANGE_N = {'1W':5,'1M':22,'3M':65,'1Y':DAYS};
+const RANGE_N = {'1W':5,'1M':22,'3M':65,'1Y':253};
 const RANGE_LABEL = {'1D':'Today','1W':'Past week','1M':'Past month','3M':'Past 3 months','1Y':'Past year'};
 const fmtDay = dt => dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
 const HOUR_TICKS = [[6,'10:00'],[18,'11:00'],[30,'12:00'],[42,'1:00'],[54,'2:00'],[66,'3:00']];
 function seriesFor(s, rng){ const u=M[s];
   if(rng==='1D') return {c:u.intra, o:u.i.o, h:u.i.h, l:u.i.l, v:u.i.v, base:u.prev, slots:INTRA, at:barTime, ticks:HOUR_TICKS};
-  const n=RANGE_N[rng], k=n-1, sl=a=>a.slice(-k);
+  const n=Math.min(RANGE_N[rng], DAYS+1), k=n-1, sl=a=>a.slice(-k);
   const days=[...tradingDays.slice(-k), today];
   return { c:[...sl(u.daily), u.price], o:[...sl(u.d.o), u.i.o[0]], h:[...sl(u.d.h), Math.max(...u.i.h)], l:[...sl(u.d.l), Math.min(...u.i.l)],
-           v:[...sl(u.d.v), u.i.v.reduce((a,b)=>a+b,0)], base:null, slots:n, at:i=>i===n-1?'Today':fmtDay(days[i]) };
+           v:[...sl(u.d.v), u.i.v.reduce((a,b)=>a+b,0)], base:null, slots:n, at:i=>i===n-1?sessLabel():fmtDay(days[i]) };
 }
 function portSeries(rng){
   const H=Object.entries(S.holdings);
   if(rng==='1D'){ const n=Math.max(...symbols.map(s=>M[s].intra.length)); const c=[];
     for(let i=0;i<n;i++) c.push(S.cash+H.reduce((a,[s,h])=>a+h.qty*(M[s].intra[i] ?? M[s].price),0));
     return {c, base:S.cash+H.reduce((a,[s,h])=>a+h.qty*M[s].prev,0), slots:INTRA, at:barTime}; }
-  const n=RANGE_N[rng], k=n-1; const days=[...tradingDays.slice(-k), today]; const c=[];
+  const n=Math.min(RANGE_N[rng], DAYS+1), k=n-1; const days=[...tradingDays.slice(-k), today]; const c=[];
   for(let j=0;j<k;j++) c.push(S.cash+H.reduce((a,[s,h])=>a+h.qty*M[s].daily[DAYS-k+j],0));
   c.push(portfolio().value);
-  return {c, base:null, slots:n, at:i=>i===n-1?'Today':fmtDay(days[i])};
+  return {c, base:null, slots:n, at:i=>i===n-1?sessLabel():fmtDay(days[i])};
 }
 
 /* Chart animation: draw-in on change, pulsing last-price dot, scrub */
@@ -1908,7 +1921,7 @@ let revealAt=0, pRevealAt=0;
 const revealK = t0 => { if(REDUCE) return 1; const k=Math.min(1,(performance.now()-t0)/750); return 1-Math.pow(1-k,3); };
 
 /* ---------- Trade view ---------- */
-let cur=S.sel && M[S.sel] ? S.sel : 'TXM', range='1D', ctype='line', hoverI=null, geoT=null, side='buy', mode='dollars', otype='market';
+let cur=S.sel && M[S.sel] ? S.sel : INDEX_SYM, range='1D', ctype='line', hoverI=null, geoT=null, side='buy', mode='dollars', otype='market';
 let filter='All', query='';
 const STAR='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>';
 const STAR_O='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>';
@@ -1961,7 +1974,7 @@ el('list').addEventListener('click',e=>{
 function toggleWatch(s){ const i=S.watch.indexOf(s); if(i>=0){S.watch.splice(i,1); toast(`Removed ${s} from your watchlist`);} else {S.watch.push(s); toast(`Added ${s} to your watchlist`);} save(); }
 
 function renderMovers(){
-  const ranked=symbols.filter(s=>s!=='TXM').sort((a,b)=>Math.abs(chgPct(b))-Math.abs(chgPct(a))).slice(0,6);
+  const ranked=symbols.filter(s=>s!==INDEX_SYM).sort((a,b)=>Math.abs(chgPct(b))-Math.abs(chgPct(a))).slice(0,6);
   const key=ranked.join();
   if(el('movers').dataset.k!==key){ el('movers').dataset.k=key;
     el('movers').innerHTML=ranked.map(s=>`<button class="mv" type="button" data-open="${s}"><div class="mv-top"><b>${s}</b><span class="pill"></span></div><canvas aria-hidden="true"></canvas><div class="num"></div></button>`).join(''); }
@@ -2001,7 +2014,7 @@ function renderStock(full){
   el('dStats').innerHTML=[
     ['Open',$(u.i.o[0])],['Day high',$(hi)],['Day low',$(lo)],
     ['52-wk high',$(yhi)],['52-wk low',$(ylo)],['Volume',fmtVol(u.i.v.reduce((a,b)=>a+b,0))],
-    ['P/E ratio',u.pe?u.pe.toFixed(1):'—'],['Dividend yield',u.dy?u.dy.toFixed(1)+'%':'—'],['Prev close',$(u.prev)]
+    ['Avg daily volume',fmtVol(u.d.v.slice(-30).reduce((a,b)=>a+b,0)/Math.min(30,u.d.v.length))],['Sector',esc(u.sec)],['Prev close',$(u.prev)]
   ].map(([k,v])=>`<div><span class="eyebrow">${k}</span><b>${v}</b></div>`).join('');
   el('dPos').innerHTML = h ? (()=>{ const val=h.qty*u.price, ret=val-h.cost;
     return `<div class="kv"><div><span class="eyebrow">Shares</span><b>${qtyF(h.qty)}</b></div><div><span class="eyebrow">Market value</span><b>${$(val)}</b></div>
@@ -2058,6 +2071,8 @@ function updateEstimate(clear){
 function submitOrder(){
   const q=orderQty(), m=el('dMsg');
   const fail=t=>{ m.className='msg err'; m.textContent=t; Sound.play('denied'); };
+  if(MK.mode==='offline') return fail('Trading pauses while market data is unavailable. Check your connection.');
+  if(MK.mode==='loading') return fail('Real prices are still loading. Try again in a moment.');
   if(!(q>0)) return fail('Enter an amount greater than zero.');
   if(otype==='limit'){ const lim=parseFloat(el('dLim').value); if(!(lim>0)) return fail('Enter a limit price greater than zero.');
     if(side==='sell' && !(S.holdings[cur] && S.holdings[cur].qty>=q-1e-9)) return fail(`You can sell at most ${qtyF(S.holdings[cur]?.qty||0)} shares.`);
@@ -2102,10 +2117,10 @@ function renderPortfolio(live){
   const parts=[...Object.entries(bySec).sort((a,b)=>b[1]-a[1]), ['Cash',S.cash]];
   el('alloc').innerHTML=parts.map(([k,v])=>`<span style="width:${v/p.value*100}%;background:${SECTOR_COLORS[k]}" title="${k}"></span>`).join('');
   el('legend').innerHTML=parts.map(([k,v])=>`<span><i style="background:${SECTOR_COLORS[k]}"></i>${k} <span class="muted">${(v/p.value*100).toFixed(1)}%</span></span>`).join('');
-  const note = inv<1 ? 'Buy your first stock or the TXM index fund to get a score.'
+  const note = inv<1 ? 'Buy your first stock or an index fund like SPY to get a score.'
     : score>=70 ? 'Well spread out. No single company or sector dominates.'
-    : score>=40 ? `Somewhat concentrated. ${biggest>.25?'One stock is over 25% of your investments. ':''}Adding other sectors or TXM would spread risk.`
-    : 'Concentrated. A bad day for one company or sector would hit hard. Consider the TXM index fund.';
+    : score>=40 ? `Somewhat concentrated. ${biggest>.25?'One stock is over 25% of your investments. ':''}Adding other sectors or an index fund like SPY would spread risk.`
+    : 'Concentrated. A bad day for one company or sector would hit hard. Consider an index fund like SPY.';
   const gc = score>=70?'--up':score>=40?'--gold':'--down';
   el('gauge').style.background=`conic-gradient(var(${gc}) ${score*3.6}deg, #1A1A1F 0)`;
   el('gauge').innerHTML=`<span style="width:54px;height:54px;border-radius:50%;display:grid;place-items:center">${inv<1?'—':score}</span>`;
@@ -2215,14 +2230,81 @@ el('scrim').addEventListener('click',closeSheet);
 el('sheet').addEventListener('click',e=>{ if(e.target.closest('[data-close]')) closeSheet(); });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape' && !el('sheet').hidden && (!P||el('player').hidden)) closeSheet(); });
 
-/* ---------- Market tick ---------- */
+/* ---------- Market data ----------
+   live:    real IEX quotes and bars via Alpaca, through api/ on your own site
+   offline: the last real prices this device saw (trading pauses)
+   demo:    simulated prices, clearly labeled, when no market data is available (for example the Claude preview) */
 let paused=false;
-el('status').addEventListener('click',()=>{ paused=!paused; el('status').classList.toggle('paused',paused); el('statusLbl').textContent=paused?'Paused':'Live'; });
-function tick(){
-  if(paused) return;
-  const before=M[cur]?.price;
-  for(const s of symbols){ const u=M[s]; u.price=Math.max(.5,u.price*Math.exp(u.v/Math.sqrt(INTRA)*.5*gauss(Math.random)));
-    const k=u.intra.length-1; u.intra[k]=u.price; u.i.h[k]=Math.max(u.i.h[k],u.price); u.i.l[k]=Math.min(u.i.l[k],u.price); u.i.v[k]+=Math.round(u.i.v[k]*.03*Math.random()); }
+const MK = { mode:'demo', open:false, source:'', nextOpen:null, asOf:0, base:null, session:null };
+const ET_FMT = new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+function etParts(iso){ const p={}; for(const x of ET_FMT.formatToParts(new Date(iso))) p[x.type]=x.value; return {date:`${p.year}-${p.month}-${p.day}`, min:(+p.hour)*60+(+p.minute)}; }
+const sessLabel = () => (MK.mode!=='demo' && MK.session && MK.session!==TODAY) ? fmtDay(new Date(MK.session+'T12:00:00')) : 'Today';
+async function getJSON(url){ const ctl=new AbortController(), t=setTimeout(()=>ctl.abort(),9000);
+  try{ const r=await fetch(url,{signal:ctl.signal}); if(!r.ok) throw new Error('HTTP '+r.status); return await r.json(); } finally{ clearTimeout(t); } }
+function apiBase(){
+  if(NATIVE) return CFG.siteUrl ? CFG.siteUrl.replace(/\/$/,'') : null;
+  if(/claude\.ai|claudeusercontent/.test(location.hostname)) return null;           // preview: no market data
+  if(location.protocol==='https:' || /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return '';
+  return null;
+}
+function applyQuotes(q){
+  for(const [s,x] of Object.entries(q.quotes||{})){ const u=M[s]; if(!u) continue;
+    u.price=x.price; u.prev=x.prev||x.price;
+    const k=u.intra.length-1; if(k>=0){ u.intra[k]=x.price; u.i.h[k]=Math.max(u.i.h[k],x.price); u.i.l[k]=Math.min(u.i.l[k],x.price); } }
+  if(q.market){ MK.open=!!q.market.open; MK.nextOpen=q.market.nextOpen||null; }
+  MK.source=q.source||'IEX via Alpaca'; MK.asOf=Date.now();
+}
+// 5-minute bars for the latest session, placed on the 9:30 to 4:00 ET grid
+function applyIntraday(j){
+  const bars=j&&j.bars||{}, ref=bars[INDEX_SYM]||Object.values(bars)[0]; if(!ref||!ref.t.length) return;
+  let session=null; for(const t of ref.t){ const e=etParts(t); if(e.min>=570&&e.min<960) session=e.date; }
+  if(!session) return; MK.session=session;
+  for(const s of symbols){ const b=bars[s], u=M[s]; if(!b) continue;
+    const slot=new Array(INTRA).fill(null);
+    b.t.forEach((t,i)=>{ const e=etParts(t); if(e.date!==session) return; const k=Math.floor((e.min-570)/5); if(k<0||k>=INTRA) return;
+      const c=slot[k]; if(!c) slot[k]={o:b.o[i],h:b.h[i],l:b.l[i],c:b.c[i],v:b.v[i]}; else { c.h=Math.max(c.h,b.h[i]); c.l=Math.min(c.l,b.l[i]); c.c=b.c[i]; c.v+=b.v[i]; } });
+    let last=-1; slot.forEach((x,i)=>{ if(x) last=i; }); if(last<0) continue;
+    const intra=[], I={o:[],h:[],l:[],v:[]}; let pc=u.prev;
+    for(let k=0;k<=last;k++){ const x=slot[k]||{o:pc,h:pc,l:pc,c:pc,v:0}; intra.push(x.c); I.o.push(x.o); I.h.push(x.h); I.l.push(x.l); I.v.push(x.v); pc=x.c; }
+    u.intra=intra; u.i=I; u.intra[last]=u.price; I.h[last]=Math.max(I.h[last],u.price); I.l[last]=Math.min(I.l[last],u.price);
+  }
+}
+// Daily bars for up to a year, aligned to the same trading days for every symbol
+function applyDaily(j){
+  const bars=j&&j.bars||{}, ref=bars[INDEX_SYM]; if(!ref||!ref.t.length) return;
+  const keep=ref.t.map(t=>etParts(t).date).filter(d=>d!==MK.session).slice(-253);
+  for(const s of symbols){ const b=bars[s], u=M[s]; if(!b||!b.t.length) continue;
+    const at={}; b.t.forEach((t,i)=>{ at[etParts(t).date]=i; });
+    const daily=[], d={o:[],h:[],l:[],v:[]}; let li=0;
+    for(const day of keep){ const i = at[day]!=null ? at[day] : li; li=i; daily.push(b.c[i]); d.o.push(b.o[i]); d.h.push(b.h[i]); d.l.push(b.l[i]); d.v.push(at[day]!=null?b.v[i]:0); }
+    u.daily=daily; u.d=d;
+  }
+  DAYS=keep.length; tradingDays=keep.map(k=>new Date(k+'T12:00:00'));
+}
+function applyAll(q,day,intr){ applyQuotes(q); applyIntraday(intr); applyDaily(day); applyQuotes(q); }
+
+function renderDataBadge(){
+  const st=el('status'), lbl=el('statusLbl'), note=el('dataNote');
+  st.classList.remove('paused','demo','closed'); document.documentElement.classList.toggle('mkt-loading', MK.mode==='loading');
+  const when=t=>new Date(t).toLocaleString('en-US',{weekday:'short',hour:'numeric',minute:'2-digit',timeZoneName:'short'});
+  if(MK.mode==='live'){
+    if(MK.open){ lbl.textContent='Live'; st.title='Real-time quotes from the IEX exchange via Alpaca'; }
+    else { st.classList.add('closed'); lbl.textContent='Market closed'; st.title=MK.nextOpen?`US market opens ${when(MK.nextOpen)}`:'US market is closed'; }
+    note.textContent=`Real market data · ${MK.source}${MK.open?'':' · Market closed, showing the last session'}${!MK.open&&MK.nextOpen?` · Opens ${when(MK.nextOpen)}`:''} · Practice money only`;
+  } else if(MK.mode==='offline'){ st.classList.add('closed'); lbl.textContent='Offline';
+    note.textContent=`Market data unavailable. Showing real prices from ${new Date(MK.asOf).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}. Trading pauses until data is back.`;
+  } else if(MK.mode==='loading'){ lbl.textContent='Loading'; note.textContent='Loading real market prices…';
+  } else { st.classList.add('demo'); if(paused) st.classList.add('paused'); lbl.textContent=paused?'Paused':'Demo prices';
+    st.title='Simulated prices for practice. Tap to pause or resume.';
+    note.textContent='Demo prices: simulated moves for practice, not real quotes for these companies. Real prices appear when Toro runs on your own site with market data connected.'; }
+  el('disclaimer').textContent = MK.mode==='demo'
+    ? 'Toro is for learning. Company names are real, but prices in demo mode are simulated. Practice money only. League players are simulated. Nothing here is financial advice.'
+    : 'Toro is for learning, with practice money only. Market data from IEX via Alpaca may be delayed or incomplete. League players are simulated. Nothing here is financial advice.';
+}
+el('status').addEventListener('click',()=>{ if(MK.mode!=='demo') return; paused=!paused; renderDataBadge(); });
+
+// After any price update: fill limit orders, fire alerts, redraw, and tick softly
+function onPrices(before){
   for(const o of [...S.orders]){ const p=M[o.s].price;
     if((o.side==='buy'&&p<=o.limit)||(o.side==='sell'&&p>=o.limit)){
       S.orders=S.orders.filter(x=>x.id!==o.id);
@@ -2230,17 +2312,54 @@ function tick(){
   for(const a of [...S.alerts]){ const p=M[a.s].price;
     if((a.dir==='above'&&p>=a.px)||(a.dir==='below'&&p<=a.px)){ toast(`Alert: ${a.s} is ${a.dir} ${$(a.px)} (now ${$(p)})`); Sound.play('alert'); S.alerts=S.alerts.filter(x=>x.id!==a.id); save(); } }
   if(!P || el('player').hidden) renderTab(true);
-  // a faint tick as the stock you're watching moves, like a live terminal
-  if(tab==='trade' && !document.hidden && (!P||el('player').hidden) && before!=null) Sound.play(M[cur].price>=before?'up':'down');
+  if(tab==='trade' && !document.hidden && (!P||el('player').hidden) && before!=null && M[cur].price!==before) Sound.play(M[cur].price>before?'up':'down');
+}
+// Demo mode: simulated moves every 2 seconds and a new 5-minute bar every 15 seconds
+function tick(){
+  if(paused || MK.mode!=='demo') return;
+  const before=M[cur]?.price;
+  for(const s of symbols){ const u=M[s]; u.price=Math.max(.5,u.price*Math.exp(u.v/Math.sqrt(INTRA)*.5*gauss(Math.random)));
+    const k=u.intra.length-1; u.intra[k]=u.price; u.i.h[k]=Math.max(u.i.h[k],u.price); u.i.l[k]=Math.min(u.i.l[k],u.price); u.i.v[k]+=Math.round(u.i.v[k]*.03*Math.random()); }
+  onPrices(before);
 }
 setInterval(tick,2000);
-// a new 5-minute bar every 15 seconds until the session ends
-setInterval(()=>{ if(paused) return; for(const s of symbols){ const u=M[s]; if(u.intra.length<INTRA){ const p=u.price; u.intra.push(p); u.i.o.push(p); u.i.h.push(p); u.i.l.push(p); u.i.v.push(u.i.v[u.i.v.length-1]*(.5+Math.random()*.8)); } } },15000);
+setInterval(()=>{ if(paused || MK.mode!=='demo') return; for(const s of symbols){ const u=M[s]; if(u.intra.length<INTRA){ const p=u.price; u.intra.push(p); u.i.o.push(p); u.i.h.push(p); u.i.l.push(p); u.i.v.push(u.i.v[u.i.v.length-1]*(.5+Math.random()*.8)); } } },15000);
+
+async function startMarket(){
+  const base=apiBase(); MK.base=base;
+  if(base==null){ MK.mode='demo'; renderDataBadge(); return; }
+  let cached=null; try{ cached=JSON.parse(localStorage.getItem('toro.market')); }catch(e){}
+  if(cached && S.priceMode==='live'){ applyAll(cached.q,cached.day,cached.intr); MK.mode='offline'; MK.asOf=cached.t; }
+  else MK.mode='loading';
+  renderDataBadge(); renderTab();
+  const syms=symbols.join(',');
+  try{
+    const [q, day, intr] = await Promise.all([ getJSON(`${base}/api/quotes?symbols=${syms}`), getJSON(`${base}/api/bars?symbols=${syms}&timeframe=1Day&days=380`), getJSON(`${base}/api/bars?symbols=${syms}&timeframe=5Min&days=5`) ]);
+    if(!q.quotes || !Object.keys(q.quotes).length) throw new Error('no quotes');
+    applyAll(q, day, intr); MK.mode='live';
+    try{ localStorage.setItem('toro.market', JSON.stringify({q,day,intr,t:Date.now()})); }catch(e){}
+    if(S.priceMode!=='live'){
+      // Positions bought at demo prices go back to cash at cost before real prices take over
+      const had=Object.keys(S.holdings).length+S.orders.length;
+      for(const h of Object.values(S.holdings)) S.cash+=h.cost;
+      S.holdings={}; S.orders=[]; S.alerts=[]; S.priceMode='live'; save();
+      if(had||migrated) toast('Real market prices are on. Your practice positions went back to cash so every trade uses real prices.', I.chart);
+    }
+    revealAt=pRevealAt=performance.now();
+    setInterval(async()=>{ if(document.hidden||MK.mode!=='live') return;
+      try{ const before=M[cur]?.price; applyQuotes(await getJSON(`${base}/api/quotes?symbols=${syms}`)); onPrices(before); renderDataBadge(); }catch(e){} }, 15000);
+    setInterval(async()=>{ if(document.hidden||MK.mode!=='live'||!MK.open) return;
+      try{ applyIntraday(await getJSON(`${base}/api/bars?symbols=${syms}&timeframe=5Min&days=5`)); }catch(e){} }, 60000);
+  }catch(e){
+    MK.mode = (cached && S.priceMode==='live') ? 'offline' : 'demo';   // nothing real yet: labeled demo prices
+  }
+  renderDataBadge(); renderTab();
+}
 window.addEventListener('resize',()=>{ moveInd(); renderTab(true); if(tab==='profile') renderProfile(); });
 
 /* ---------- Deep links ----------
    #learn #trade #portfolio #tools #profile open a section; #invest #trading #money #biz #supply pick a course;
-   #LUMQ opens a stock. On a real domain /stock/LUMQ and /learn/supply work too (universal-link paths). */
+   #AAPL opens a stock. On a real domain /stock/AAPL and /learn/supply work too (universal-link paths). */
 function route(){
   const path=location.pathname.match(/\/(stock|learn)\/([A-Za-z]+)\/?$/), section=location.pathname.match(/\/(learn|trade|portfolio|tools|profile)\/?$/);
   let h=(location.hash||'').slice(1);
@@ -2458,7 +2577,7 @@ const Cloud = (()=>{
   // Native: black status bar, hide the launch screen once the app is drawn
   try{ PLUG.StatusBar?.setStyle({style:'DARK'}); PLUG.StatusBar?.setBackgroundColor?.({color:'#000000'}); }catch(e){}
   setTimeout(()=>{ try{ PLUG.SplashScreen?.hide(); }catch(e){} }, 300);
-  // Universal links (https://your-domain/stock/LUMQ, /learn/supply, /profile) open the matching screen
+  // Universal links (https://your-domain/stock/AAPL, /learn/supply, /profile) open the matching screen
   PLUG.App?.addListener('appUrlOpen', ev=>{ try{ const u=new URL(ev.url); Cloud.handleUrl(u);
     const m=u.pathname.match(/\/(stock|learn)\/([A-Za-z]+)\/?$/), sec=u.pathname.match(/\/(learn|trade|portfolio|tools|profile)\/?$/);
     const h = m ? (m[1]==='stock' ? m[2].toUpperCase() : m[2]) : sec ? sec[1] : u.hash.slice(1);
@@ -2475,5 +2594,7 @@ const Cloud = (()=>{
 settleStreak(); settleLeague(); regenHearts();
 route();
 Cloud.init();
+startMarket();
+if(migrated){ save(); if(apiBase()==null) setTimeout(()=>toast('Toro now uses real companies. Positions in the old demo companies went back to cash.', I.chart), 800); }
 })();
 </script>
