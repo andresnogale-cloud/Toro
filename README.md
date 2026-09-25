@@ -23,12 +23,19 @@ Pure black, elegant and modern, in the style of a modern trading app. Gold is ke
   - Diamond lesson stops with a rotating ring.
 - **Fonts:** Figtree for the interface, JetBrains Mono for chart axes, and Cinzel for the TORO wordmark.
 - **Candlestick motion:** a faint gold candlestick chart scrolls slowly across the background, candles rise behind the logo on the opening screen, and a short "bull run" of candles grows when you finish a lesson.
-- **Sound:** a futuristic trading-terminal sound set, generated live in the browser with no audio files:
-  - A power-up sweep and "market open" chime on your first tap of each visit. The opening screen says "Tap to enter".
-  - Digital ticks for taps and choices, a rising two-tone for correct answers and a "sell-off" down-sweep for wrong ones.
-  - An "order filled" arpeggio for trades, a terminal-style double ping for price alerts, and a synth rise and chord when a lesson ends.
-  - Faint ticks as the stock you're watching moves.
-  - The speaker button in the header mutes or unmutes.
+- **Sound:** a futuristic trading-terminal sound set, generated live in the browser with no audio files. Every tap makes a sound, and each part of the app has its own:
+  - **Main tabs:** one note each (Learn, Trade, Portfolio, Tools, Profile), each with its own tone.
+  - **Learn:** a pluck per course, a bright start, a dull thud on locked lessons and a page swish for the Guidebook.
+  - **Lessons:** blips for answers, a woody tick for word tiles, a two-tone for correct, a "sell-off" down-sweep for wrong, a whoosh forward and a drop back.
+  - **Trade:**
+    - A data chirp when you load a stock and a switch click for toggles.
+    - Rising ticks across the time ranges.
+    - An up-glide for Buy and a down-glide for Sell.
+    - An "order filled" arpeggio, a buzz when an order can't go through, and terminal pings for alerts.
+    - Faint market ticks as prices move.
+  - **Profile and everywhere else:** a rising tone for your name chip, confirm, copy and warning sounds, and a power-up on your first tap of each visit.
+  - **In the phone apps,** every tap also gives a light haptic.
+  - The speaker button mutes or unmutes.
 - **Reduced motion:** if the device asks for less motion, the animations switch off.
 
 ## Courses

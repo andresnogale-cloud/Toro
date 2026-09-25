@@ -1082,7 +1082,8 @@ function haptic(k){
       if(k==='correct'||k==='complete') PLUG.Haptics.notification({type:'SUCCESS'});
       else if(k==='wrong') PLUG.Haptics.notification({type:'ERROR'});
       else if(k==='trade'||k==='chime') PLUG.Haptics.impact({style:'MEDIUM'});
-      else if(k==='select'||k==='pair') PLUG.Haptics.impact({style:'LIGHT'});
+      else if(k==='denied'||k==='locked') PLUG.Haptics.notification({type:'WARNING'});
+      else if(!['up','down','boot','alert'].includes(k)) PLUG.Haptics.impact({style:'LIGHT'});
     } else if(navigator.vibrate && matchMedia('(pointer:coarse)').matches){
       if(k==='wrong') navigator.vibrate([18,40,18]); else if(k==='correct'||k==='trade') navigator.vibrate(12);
     }
@@ -1120,6 +1121,11 @@ const Sound=(()=>{
   function click(at=0, gain=.05, hp=4000, dur=.025){ const c=ac(); if(!c) return; const t=c.currentTime+at;
     const src=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain(); src.buffer=noiseBuf; f.type='highpass'; f.frequency.value=hp;
     g.gain.setValueAtTime(gain,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); src.connect(f).connect(g).connect(out); src.start(t); src.stop(t+dur+.02); }
+  function swish(at, dur, f1, f2, gain){ const c=ac(); if(!c) return; const t=c.currentTime+at;
+    const src=c.createBufferSource(), bp=c.createBiquadFilter(), g=c.createGain(); src.buffer=noiseBuf; src.loop=true; bp.type='bandpass'; bp.Q.value=1.2;
+    bp.frequency.setValueAtTime(f1,t); bp.frequency.exponentialRampToValueAtTime(f2,t+dur);
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(gain,t+dur*.3); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    src.connect(bp).connect(g).connect(out); g.connect(wet); src.start(t); src.stop(t+dur+.02); }
   const SFX={
     tap:     ()=>{ click(0,.035,5000,.02); v(2400,0,.03,{type:'square',gain:.008,lp:5000,wet:false}); },
     select:  ()=>{ click(0,.025,6000,.015); v(1560,0,.07,{to:1180,gain:.04}); },
@@ -1132,6 +1138,41 @@ const Sound=(()=>{
     alert:   ()=>{ [0,.16].forEach(t=>{ v(1480,t,.12,{type:'square',gain:.016,lp:3000}); v(1976,t+.06,.16,{gain:.035}); }); },
     up:      ()=>v(1900,0,.05,{gain:.007,wet:false}),
     down:    ()=>v(1400,0,.05,{gain:.006,wet:false}),
+    // ---- per-area tap sounds: each part of the app has its own voice ----
+    // Main tabs: one note each on a pentatonic scale, each with its own timbre
+    tab:     n=>{ const f=[784,880,988,1175,1319][n]||880, ty=['triangle','square','sine','square','triangle'][n]||'sine';
+                  click(0,.03,5000,.02); v(f,0,.12,{type:ty,gain:ty==='square'?.018:.045,lp:ty==='square'?3500:0}); v(f*1.5,.035,.16,{gain:.02}); },
+    // Learn
+    course:  n=>{ const f=[659,740,831,988,1109][n]||740; v(f,0,.28,{type:'triangle',gain:.05}); v(f*2,0,.12,{gain:.015}); },
+    start:   ()=>{ click(0,.03,6000); v(1047,0,.1,{type:'triangle',gain:.045}); v(1568,.06,.26,{type:'triangle',gain:.045}); },
+    locked:  ()=>{ v(150,0,.16,{gain:.09,lp:600,wet:false}); click(0,.02,1500,.03); },
+    page:    ()=>{ swish(0,.18,1200,4000,.04); v(1760,.05,.1,{gain:.012}); },
+    // Lesson player
+    word:    ()=>{ v(1100,0,.06,{type:'triangle',gain:.05,lp:3000,wet:false}); click(0,.02,4500,.015); },
+    unword:  ()=>{ v(900,0,.08,{type:'triangle',to:650,gain:.04,wet:false}); },
+    matchSel:()=>{ v(1320,0,.08,{gain:.035}); click(0,.015,7000,.012); },
+    forward: ()=>{ swish(0,.22,800,6000,.035); v(1175,.08,.14,{type:'triangle',gain:.03}); },
+    back:    ()=>{ v(1200,0,.12,{to:700,gain:.035}); click(0,.02,4000,.015); },
+    close:   ()=>{ v(900,0,.16,{to:400,gain:.04}); swish(0,.12,3000,600,.02); },
+    // Trade
+    load:    ()=>{ [2000,2400,2800].forEach((f,i)=>v(f,i*.022,.05,{type:'square',gain:.01,lp:4500,wet:false})); click(0,.025,5000,.015); },
+    buySide: ()=>{ v(988,0,.14,{type:'triangle',to:1319,glide:.08,gain:.045}); },
+    sellSide:()=>{ v(740,0,.14,{type:'triangle',to:554,glide:.08,gain:.045}); },
+    switch:  ()=>{ click(0,.04,3000,.02); click(.05,.03,5000,.015); v(1500,.05,.06,{type:'square',gain:.01,lp:4000,wet:false}); },
+    range:   n=>{ v(1100+n*140,0,.06,{type:'square',gain:.014,lp:4200,wet:false}); click(0,.02,6000,.012); },
+    filter:  ()=>{ v(1650,0,.05,{gain:.03,wet:false}); click(0,.015,6000,.01); },
+    starOn:  ()=>{ [1568,2093,2637].forEach((f,i)=>v(f,i*.035,.22,{gain:.028})); },
+    starOff: ()=>{ v(1319,0,.14,{to:880,gain:.03}); },
+    placed:  ()=>{ click(0,.04,3500); v(1319,.01,.1,{type:'square',gain:.014,lp:3800}); v(1760,.07,.3,{gain:.035}); },
+    denied:  ()=>{ [0,.09].forEach(t=>v(180,t,.07,{type:'square',gain:.03,lp:900,wet:false})); },
+    remove:  ()=>{ click(0,.03,3500); v(900,0,.12,{to:480,gain:.035}); },
+    // Profile, header and everything else
+    me:      ()=>{ v(600,0,.3,{to:1200,glide:.18,gain:.04}); v(1800,.12,.3,{gain:.015,detune:7}); },
+    confirm: ()=>{ v(1175,0,.1,{type:'triangle',gain:.04}); v(1760,.06,.2,{type:'triangle',gain:.035}); },
+    warn:    ()=>{ [0,.12].forEach(t=>v(330,t,.1,{type:'triangle',gain:.05,lp:1500,wet:false})); },
+    copy:    ()=>{ click(0,.03,5000); click(.05,.03,5000); v(2093,.08,.18,{gain:.025}); },
+    field:   ()=>{ click(0,.02,6500,.012); v(2600,0,.03,{gain:.008,wet:false}); },
+    soft:    ()=>{ v(1400,0,.06,{gain:.025,wet:false}); },
     boot:    ()=>{ // power-up: sub hit and a rising filtered sweep, then a two-note "market open" signature
       v(55,0,.7,{gain:.08,wet:false});
       v(80,0,1.1,{type:'sawtooth',to:880,glide:.9,gain:.03,lp:200,lpTo:5000,q:10});
@@ -1139,7 +1180,7 @@ const Sound=(()=>{
       click(.9,.05,3000,.05); v(1175,.92,.5,{type:'triangle',gain:.045}); v(1760,1.02,.9,{gain:.04}); v(2349,1.02,.9,{gain:.015,detune:8}); },
   };
   return {
-    play(k){ haptic(k); if(enabled() && SFX[k]) try{ SFX[k](); }catch(e){} },
+    play(k,n=0){ haptic(k); if(enabled() && SFX[k]) try{ SFX[k](n); }catch(e){} },
     on: enabled,
     toggle(){ S.sound = !enabled(); save(); if(enabled()) SFX.chime(); return enabled(); }
   };
@@ -1152,6 +1193,45 @@ const Sound=(()=>{
   const go=()=>{ removeEventListener('pointerdown',go,true); removeEventListener('keydown',go,true);
     try{ sessionStorage.setItem('toro.boot','1'); }catch(e){} Sound.play('boot'); };
   addEventListener('pointerdown',go,true); addEventListener('keydown',go,true);
+})();
+// Every tap makes a sound. The sound depends on what was tapped and where in the app.
+(function tapSounds(){
+  const TAB_ORDER=['learn','trade','portfolio','tools','profile'], RANGE_ORDER=['1D','1W','1M','3M','1Y','ALL'];
+  function pick(t){
+    const m=sel=>t.matches(sel);
+    if(m('#sndBtn,#pCheck,#dGo,[data-buy]')) return null;          // these play their own sounds
+    if(m('[data-pick]')) return ['select'];
+    if(m('nav.tabs [data-tab]')) return ['tab', TAB_ORDER.indexOf(t.dataset.tab)];
+    if(m('[data-course]')) return ['course', COURSES.findIndex(c=>c.id===t.dataset.course)];
+    if(m('[data-node]')) return [t.closest('.step.locked') ? 'locked' : 'start'];
+    if(m('[data-guide]')) return ['page'];
+    if(m('[data-add]')) return ['word'];
+    if(m('[data-unpick]')) return ['unword'];
+    if(m('[data-ml],[data-mr]')) return ['matchSel'];
+    if(m('#pGo,#pNext,#pDone,#pApply,#pRefill')) return ['forward'];
+    if(m('#pX,#pQuitNo,#resetNo,#lrNo,#meCancel')) return ['back'];
+    if(m('#pQuitYes,[data-close]')) return ['close'];
+    if(m('[data-open]')) return ['load'];
+    if(m('[data-star],#tStar')) return [t.getAttribute('aria-pressed')==='true' ? 'starOff' : 'starOn'];
+    if(m('[data-type],[data-ot],[data-mode],#status')) return ['switch'];
+    if(m('[data-r]')) return ['range', Math.max(0,RANGE_ORDER.indexOf(t.dataset.r))];
+    if(m('[data-goal]')) return ['range', [10,20,30,50].indexOf(+t.dataset.goal)];
+    if(m('[data-side="buy"]')) return ['buySide'];
+    if(m('[data-side="sell"]')) return ['sellSide'];
+    if(m('[data-f]')) return ['filter'];
+    if(m('[data-cancel],[data-unalert]')) return ['remove'];
+    if(m('#resetBtn,#lresetBtn,#resetYes,#lrYes')) return ['warn'];
+    if(m('#meChip')) return ['me'];
+    if(m('#meSave,#installBtn,#aAdd')) return ['confirm'];
+    if(m('#dCopy')) return ['copy'];
+    if(m('input,select,textarea')) return ['field'];
+    if(m('[data-go],.brand,.meter')) return ['soft'];
+    return ['tap'];
+  }
+  addEventListener('click',e=>{
+    const t=e.target.closest('button,a,input,select,textarea,[role="button"]'); if(!t || t.disabled) return;
+    const k=pick(t); if(k) Sound.play(k[0], k[1]>0?k[1]:0);
+  },true);
 })();
 
 /* =====================================================================
@@ -1438,8 +1518,8 @@ function wirePlayer(){
     if(P.queue.length){ P.phase='q'; renderPlayer(); } else { const {c,u,l}=P; closePlayer(); startLesson(c,u,l); } });
   if(P.phase!=='q'||P.checked) return;
   const q=P.queue[0], p=prep(q);
-  pl.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{ Sound.play('select'); const v=b.dataset.pick; P.sel = q.t==='tf' ? v==='true' : +v; renderPlayer(); });
-  pl.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{ Sound.play('select'); const i=+b.dataset.add; if(!p.ans.includes(i)) p.ans.push(i); renderPlayer(); });
+  pl.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{ const v=b.dataset.pick; P.sel = q.t==='tf' ? v==='true' : +v; renderPlayer(); });
+  pl.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.add; if(!p.ans.includes(i)) p.ans.push(i); renderPlayer(); });
   pl.querySelectorAll('[data-unpick]').forEach(b=>b.onclick=()=>{ p.ans.splice(+b.dataset.unpick,1); renderPlayer(); });
   pl.querySelectorAll('[data-ml],[data-mr]').forEach(b=>b.onclick=()=>{
     if(b.dataset.ml!=null) p.selL = p.selL===+b.dataset.ml ? null : +b.dataset.ml; else p.selR = p.selR===+b.dataset.mr ? null : +b.dataset.mr;
@@ -1577,7 +1657,7 @@ el('meRange').addEventListener('click',e=>{ const b=e.target.closest('[data-r]')
   el('meRange').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); showMe(); });
 el('meType').addEventListener('click',e=>{ const b=e.target.closest('[data-type]'); if(!b) return; meType=b.dataset.type; meRevealAt=performance.now();
   el('meType').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); });
-el('meChip').addEventListener('click',()=>{ Sound.play('tap'); showTab('profile'); });
+el('meChip').addEventListener('click',()=>{ showTab('profile'); });
 // Edit name inline (the viewer blocks prompt dialogs)
 const nameRowHTML=el('meNameRow').innerHTML;
 function renderProfileNameRow(){ const row=el('meNameRow'); row.innerHTML=nameRowHTML; el('meEdit').addEventListener('click',openNameEditor); }
@@ -1920,7 +2000,7 @@ ticket.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{ mode=b.dataset
 el('dAmt').oninput=()=>updateEstimate(true); el('dLim').oninput=()=>updateEstimate(true);
 el('dGo').onclick=submitOrder;
 el('aAdd').onclick=()=>{ const px=parseFloat(el('aPx').value); if(!(px>0)){ toast('Enter a price above $0 for the alert.'); return; }
-  S.alerts.push({id:++S.seq,s:cur,dir:el('aDir').value,px}); save(); Sound.play('select'); toast(`Alert set: ${cur} ${el('aDir').value} ${$(px)}`); };
+  S.alerts.push({id:++S.seq,s:cur,dir:el('aDir').value,px}); save(); Sound.play('placed'); toast(`Alert set: ${cur} ${el('aDir').value} ${$(px)}`); };
 el('dCopy').onclick=()=>{ const link=location.href.split('#')[0]+'#'+cur; const fail=()=>toast(link);
   try{ navigator.clipboard.writeText(link).then(()=>toast('Link copied'),fail); }catch(e){ fail(); } };
 function orderQty(){
@@ -1945,11 +2025,11 @@ function updateEstimate(clear){
 }
 function submitOrder(){
   const q=orderQty(), m=el('dMsg');
-  const fail=t=>{ m.className='msg err'; m.textContent=t; };
+  const fail=t=>{ m.className='msg err'; m.textContent=t; Sound.play('denied'); };
   if(!(q>0)) return fail('Enter an amount greater than zero.');
   if(otype==='limit'){ const lim=parseFloat(el('dLim').value); if(!(lim>0)) return fail('Enter a limit price greater than zero.');
     if(side==='sell' && !(S.holdings[cur] && S.holdings[cur].qty>=q-1e-9)) return fail(`You can sell at most ${qtyF(S.holdings[cur]?.qty||0)} shares.`);
-    S.orders.push({id:++S.seq,s:cur,side,qty:q,limit:lim,t:Date.now()}); save();
+    S.orders.push({id:++S.seq,s:cur,side,qty:q,limit:lim,t:Date.now()}); save(); Sound.play('placed');
     toast(`Limit ${side} placed: ${qtyF(q)} ${cur} at ${$(lim)}`); el('dAmt').value=''; updateEstimate(true); return; }
   const r=execute(cur,side,q,M[cur].price); if(r) return fail(r);
   el('dAmt').value=''; renderStock(false);
@@ -2084,7 +2164,7 @@ function showTab(t, push=true){
   if(t==='profile') meRevealAt=performance.now();
   moveInd(); renderTab(); window.scrollTo(0,0);
 }
-document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>{ Sound.play('tap'); showTab(b.dataset.tab); }));
+document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
 
 function renderTab(live){
   renderMeters();
