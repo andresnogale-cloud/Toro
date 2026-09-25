@@ -6,13 +6,21 @@ Open `index.html` in a browser to run it. There is no build step. Lesson content
 
 ## Design
 
-Black and gold, built around the Toro logo (`assets/toro-logo.png`). The emblem is redrawn in the app as a vector (`EMBLEM_D` in `index.html`), so it stays sharp at every size and can animate.
+Pure black, in the style of a modern trading app. Gold is kept for the Toro brand, XP and achievements. The emblem from `assets/toro-logo.png` is redrawn as a vector (`EMBLEM_D` in `index.html`) so it stays sharp and can animate.
 
-- **Opening animation:** the emblem draws itself in gold, a light sweeps across it, and the TORO wordmark fades in. It plays once per browser session; tap to skip.
-- **Look:** glass panels with gold hairline borders, drifting gold dust in the background, and a gold sheen on the active tab and buttons.
-- **Lesson path:** diamond-shaped stops taken from the lattice inside the logo. Finished stops turn solid gold, and the current one has a rotating ring.
-- **Celebrations:** a gold burst on each correct answer, confetti and counting numbers when a lesson ends, and header counters that pop when your streak, gems or hearts change.
-- **Fonts:** Cinzel for headings and the wordmark, Manrope for body text, JetBrains Mono for numbers.
+- **Market color:** like Robinhood, the accent turns green when the number on screen is up and orange-red when it's down, including while you drag across a chart.
+- **Trade screen:**
+  - A scrolling ticker tape of live prices.
+  - A chart that switches between line and candlesticks, with volume bars, grid lines, a price axis, a last-price tag and a full crosshair, in the style of TradingView.
+  - An order panel, a watchlist with sparklines, top movers, company stats, your position and price alerts.
+- **Portfolio screen:** a big account value with rolling digits, a line chart you can drag across to see past values, time ranges, and a stock list with colored price pills.
+- **Animations:**
+  - An opening animation where the logo draws itself.
+  - Charts that draw in, and a pulsing last-price dot.
+  - Rolling digits, price flashes and a sliding tab underline.
+  - Gold bursts on correct answers and trades, and confetti when a lesson ends.
+  - Diamond lesson stops with a rotating ring.
+- **Fonts:** Figtree for the interface, JetBrains Mono for chart axes, and Cinzel for the TORO wordmark.
 - **Reduced motion:** if the device asks for less motion, the animations switch off.
 
 ## Courses
