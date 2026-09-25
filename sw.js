@@ -1,7 +1,7 @@
 /* Toro service worker: the app works offline after the first visit.
    App files: network first (so updates arrive), falling back to the cache.
    Fonts: cache first. Bump VERSION to force a fresh cache. */
-const VERSION = 'toro-v3';
+const VERSION = 'toro-v4';
 const SHELL = ['/', '/index.html', '/courses.js', '/config.js', '/manifest.webmanifest',
   '/assets/toro-full.png', '/assets/toro-emb.png', '/assets/toro-word.png',
   '/icons/icon-192.png', '/icons/icon-512.png', '/icons/apple-touch-icon.png', '/icons/favicon-32.png'];

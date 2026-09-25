@@ -519,4 +519,83 @@ supply: [
 ],
 };
 for (const c of window.TORO_COURSES) if (MORE[c.id]) c.units.push(...MORE[c.id]);
+/* ---------- Final tests: real-world problems at the end of each course ----------
+   SCEN: a real situation, "what would you do?" (first option is correct, like MC).
+   CALC: type the number. a = answer, pre/suf = unit shown around the box, tol = allowed difference. */
+const SCEN = (q, o, why) => ({t:'mc', scene:true, q, o, why});
+const CALC = (q, a, u={}, why) => ({t:'calc', q, a, pre:u.pre||'', suf:u.suf||'', tol:u.tol, why});
+const USD = {pre:'$'}, PCT = {suf:'%'};
+const FINAL = {
+invest: [
+  SCEN('A stranger in a group chat says a small stock will “definitely double this week.” What do you do?', ['Skip it, and only invest in what you understand','Buy quickly before the price rises','Borrow money to buy more'], 'Guaranteed-return hype is a classic red flag, and pump-and-dump schemes rely on it.'),
+  CALC('You buy 20 shares at $45 and sell them at $52. What is your total profit?', 140, USD, '($52 − $45) × 20 = $140.'),
+  CALC('$5,000 grows 7% a year, compounding, for 3 years. What is it worth, to the nearest dollar?', 6125, {pre:'$', tol:1}, '$5,000 × 1.07 × 1.07 × 1.07 ≈ $6,125.'),
+  SCEN('The market drops 20% in a month. You invest for retirement 30 years away. What’s the best move?', ['Stick to your plan and keep investing','Sell everything until things calm down','Stop investing for a few years'], 'Selling after a drop locks in losses. Long-term investors keep buying through downturns.'),
+  CALC('A stock trades at $80 and earned $4 per share last year. What is its P/E ratio?', 20, {}, '$80 ÷ $4 = 20.'),
+  CALC('Your fund charges a 0.5% expense ratio and you have $20,000 in it. What is the yearly fee?', 100, USD, '0.5% × $20,000 = $100.'),
+  CALC('You earn $60,000. Your employer matches 50% of what you put in your 401(k), up to 6% of salary. If you contribute 6%, how much does your employer add?', 1800, USD, 'You put in 6% = $3,600. Half of that is $1,800 of free money.'),
+  SCEN('70% of your savings is in one company’s stock. What should you do?', ['Gradually diversify into other sectors or an index fund','Put the rest in the same stock too','Do nothing; it has done well so far'], 'Concentration means one bad result could hit most of your money.'),
+  CALC('Using the Rule of 72, how many years does it take money to double at 6% a year?', 12, {suf:' years'}, '72 ÷ 6 = 12.'),
+  SCEN('A company beats earnings estimates, but its stock falls 8%. What’s the most likely reason?', ['It lowered its guidance for the next quarters','Beating estimates is always bad','The stock market was closed'], 'Investors price the future. Weak guidance can outweigh a strong quarter.'),
+  CALC('A stock costs $60 and pays $2.40 a year in dividends. What is its dividend yield?', 4, PCT, '$2.40 ÷ $60 = 4%.'),
+  SCEN('You need $8,000 for a car in 6 months. Where should that money be?', ['A high-yield savings account','A single tech stock','Options contracts'], 'Short-term money shouldn’t ride the stock market.'),
+],
+trading: [
+  CALC('Your account is $20,000 and you risk 1% per trade. Your stop is $2 below your entry. How many shares can you buy?', 100, {suf:' shares'}, 'Risk = 1% × $20,000 = $200. $200 ÷ $2 = 100 shares.'),
+  SCEN('Your stop-loss is at $95. The stock closes at $100, then opens at $85 after bad news. What happens?', ['It sells near $85, because a stop becomes a market order','It sells at exactly $95','The stop is cancelled'], 'Stops don’t guarantee a price. Gaps can jump right past them.'),
+  CALC('Bid $49.90, ask $50.10. You market-buy 100 shares and instantly market-sell them. How much do you lose to the spread?', 20, USD, 'You buy at $50.10 and sell at $49.90: $0.20 × 100 = $20.'),
+  SCEN('You’ve had three losing trades in a row and feel the urge to double your next position. What should you do?', ['Stop, take a break, and follow your plan’s size','Double it to win the losses back','Remove your stop-loss this time'], 'That urge is revenge trading, a fast path to bigger losses.'),
+  CALC('Entry $40, stop $38, target $46. How many dollars of reward do you aim for per $1 of risk?', 3, {}, 'Risk $2, reward $6: 6 ÷ 2 = 3.'),
+  CALC('You buy one call with a $100 strike for a $4 premium. At expiration the stock is at $110. What is your profit on the contract (100 shares)?', 600, USD, '($110 − $100 − $4) × 100 = $600.'),
+  SCEN('You shorted a stock at $30. Buyout news sends it to $45 overnight. What’s the key risk now?', ['Losses keep growing as the price rises, so cover or honor your stop','None; shorts profit when prices rise','Your loss is capped at $30'], 'A short loses money as the price rises, with no ceiling.'),
+  CALC('Over 10 trades you win 4 (averaging +$300) and lose 6 (averaging −$100). What’s your net result?', 600, USD, '4 × $300 − 6 × $100 = $1,200 − $600 = $600.'),
+  SCEN('A thinly traded stock shows bid $10.00 and ask $10.60. How should you buy?', ['Use a limit order at a price you choose','Use a market order to be fast','Buy the whole position at once no matter what'], 'Wide spreads mean market orders can fill badly. Limits protect your price.'),
+  CALC('You bought 50 shares at $120. They’re now $132. What is your gain in percent?', 10, PCT, '($132 − $120) ÷ $120 = 10%.'),
+  SCEN('A stock is up 60% in two days on social-media hype. You didn’t own it. What now?', ['Don’t chase it; wait for a setup that fits your plan','Buy immediately before it goes higher','Short it with all your money'], 'Chasing hype is FOMO, and risk is highest after huge spikes.'),
+  CALC('You set a 10% trailing stop. The stock rises to a high of $150. Where is your stop now?', 135, USD, '10% below $150 is $135.'),
+],
+money: [
+  CALC('Your take-home pay is $3,200 a month. Using 50/30/20, how much goes to needs?', 1600, USD, '50% × $3,200 = $1,600.'),
+  SCEN('A $900 car repair hits and you have no emergency fund. Your card charges 25% APR. What’s the smartest plan?', ['Pay it off as fast as possible, then build an emergency fund','Pay only the minimum for a year','Take a payday loan'], 'Card interest compounds quickly, and payday loans cost even more.'),
+  CALC('You carry $2,000 on a card at 24% APR. About how much interest do you pay in one month?', 40, USD, '24% ÷ 12 = 2% a month. 2% × $2,000 = $40.'),
+  SCEN('An email from “your bank” asks you to click a link and confirm your password. What do you do?', ['Don’t click; contact the bank through its official app or number','Click and enter your password quickly','Reply with your account number'], 'Banks never ask for passwords by email. It’s phishing.'),
+  CALC('Your essential costs are $1,800 a month. How much is a 3-month emergency fund?', 5400, USD, '3 × $1,800 = $5,400.'),
+  CALC('You owe $900 across cards with $3,000 of total limits. What is your credit utilization?', 30, PCT, '$900 ÷ $3,000 = 30%.'),
+  SCEN('A raise would move you into a higher tax bracket. Should you turn it down?', ['No, because only the extra income is taxed at the higher rate','Yes, because all your income will be taxed more','Yes, because your take-home pay will fall'], 'Brackets are marginal. You always keep more of a raise.'),
+  CALC('You’re in the 22% bracket. How much tax does a $1,000 deduction save you?', 220, USD, 'A deduction lowers taxable income: 22% × $1,000 = $220.'),
+  SCEN('You owe $4,000 at 22% APR and $600 at 8% APR, and have $200 extra each month. To save the most interest, where does the extra go?', ['The 22% debt','The 8% debt','Split it evenly'], 'The avalanche method targets the highest rate first.'),
+  CALC('You earn $5,000 a month before tax. Under the 28% guideline, what’s the most you’d spend on housing?', 1400, USD, '28% × $5,000 = $1,400.'),
+  SCEN('You earned $10,000 freelancing this year with no taxes withheld. What should you do?', ['Set aside part of it for taxes and pay what you owe on time','Spend it; freelance income isn’t taxed','Wait to see if anyone asks'], 'Freelance income is taxable. Plan for it from the first payment.'),
+  CALC('You save $250 a month for 2 years. Ignoring interest, how much do you have?', 6000, USD, '$250 × 24 months = $6,000.'),
+],
+biz: [
+  CALC('You sell a product for $25 that costs $15 to make. What is your gross margin?', 40, PCT, '($25 − $15) ÷ $25 = 40%.'),
+  CALC('You spend $2,000 on ads and win 80 new customers. What is your customer acquisition cost?', 25, USD, '$2,000 ÷ 80 = $25.'),
+  SCEN('Each customer brings $60 of lifetime profit, but costs $90 to acquire. What should you do?', ['Pause scaling ads and fix retention or acquisition cost','Double the ad budget','Nothing, since growth is growth'], 'When LTV is below CAC, every new customer loses money.'),
+  CALC('5,000 people visit your store, 2% buy, and the average order is $40. What is the revenue?', 4000, USD, '5,000 × 2% = 100 orders × $40 = $4,000.'),
+  SCEN('A competitor cuts prices by 20%. Your brand is known for quality. What’s usually the best first response?', ['Reinforce your value instead of starting a price war','Cut your price by 30% immediately','Stop marketing'], 'Price wars squeeze everyone’s margins. Strong brands compete on value.'),
+  CALC('Your startup has $180,000 in the bank and spends $15,000 a month more than it earns. How many months of runway is that?', 12, {suf:' months'}, '$180,000 ÷ $15,000 = 12.'),
+  SCEN('You’re profitable on paper but can’t make payroll, because customers pay in 90 days. What’s the problem?', ['Cash flow, so speed up collections or arrange credit','Your prices are too low','You have too many customers'], 'Profit isn’t cash. Late receivables drain the bank account.'),
+  CALC('Pre-money valuation is $2,000,000 and an investor puts in $500,000. What percentage does the investor own?', 20, PCT, 'Post-money = $2.5M. $0.5M ÷ $2.5M = 20%.'),
+  SCEN('You’re launching a new energy drink. Who should your first campaign target?', ['A specific segment, like college athletes','Everyone who drinks anything','Whoever sees the ad'], 'Choosing a target makes your message sharper and cheaper to deliver.'),
+  CALC('Your ad got 150 clicks from 12,000 impressions. What is the click-through rate?', 1.25, {suf:'%', tol:0.01}, '150 ÷ 12,000 = 1.25%.'),
+  SCEN('Your subscription app loses 10% of customers every month. Where should you focus first?', ['Retention: find out why people leave and fix it','Buy more ads to replace them','Raise the price'], 'High churn empties the bucket faster than ads can fill it.'),
+  CALC('Revenue $250,000, cost of goods sold $100,000, operating expenses $90,000. What is operating profit?', 60000, USD, '$250,000 − $100,000 − $90,000 = $60,000.'),
+],
+supply: [
+  CALC('You sell 40 units a day, lead time is 7 days, and you keep 60 units of safety stock. What is your reorder point?', 340, {suf:' units'}, '40 × 7 + 60 = 340.'),
+  SCEN('Your only supplier’s port goes on strike for two weeks, and you run just-in-time. What do you do first?', ['Tell customers, use backup suppliers, and air-freight critical parts','Wait quietly for the strike to end','Cancel all orders'], 'Act fast: protect key customers and critical parts, and communicate early.'),
+  CALC('A shipment is worth $12,000 and faces a 25% tariff. How much is the tariff?', 3000, USD, '25% × $12,000 = $3,000.'),
+  CALC('You ship six 40-foot containers. How many TEU is that?', 12, {suf:' TEU'}, 'Each 40-foot container is 2 TEU: 6 × 2 = 12.'),
+  SCEN('Your cheapest supplier delivers late 30% of the time and it’s halting production. What should you do?', ['Compare total cost of ownership and add a reliable second source','Keep them because the unit price is lowest','Order even less inventory'], 'Late parts cost more than the price savings. Dual sourcing adds resilience.'),
+  CALC('Cost of goods sold is $900,000 and average inventory is $150,000. What is inventory turnover?', 6, {suf:' times'}, '$900,000 ÷ $150,000 = 6.'),
+  SCEN('Shoppers buy 10% more for one week, and a retailer wants to order 50% more from you. What helps most?', ['Share real sales data and plan together to avoid the bullwhip effect','Triple production immediately','Ignore the order'], 'Overreacting to short spikes amplifies swings up the chain.'),
+  CALC('Inventory turnover is 5 times a year. About how many days does inventory sit before it sells?', 73, {suf:' days', tol:1}, '365 ÷ 5 = 73 days.'),
+  SCEN('A buyer wants you to handle everything: shipping, insurance, import duties, all the way to their door. Which Incoterm fits?', ['DDP','EXW','FOB'], 'Delivered Duty Paid puts all costs and risk on the seller.'),
+  CALC('Shipping 2,000 kg costs $8/kg by air or $1.50/kg by ocean. How much does ocean save?', 13000, USD, 'Air: $16,000. Ocean: $3,000. Saving: $13,000.'),
+  SCEN('The Suez Canal closes, and ships reroute around Africa. What should you plan for?', ['Longer transit times and higher costs, so update customers and raise safety stock','No change at all','Faster deliveries'], 'The detour adds 1 to 2 weeks and extra fuel on Asia–Europe routes.'),
+  CALC('Holding inventory costs 20% of its value per year. Average inventory is $50,000. What is the yearly holding cost?', 10000, USD, '20% × $50,000 = $10,000.'),
+],
+};
+for (const c of window.TORO_COURSES) if (FINAL[c.id]) c.final = FINAL[c.id];
 })();

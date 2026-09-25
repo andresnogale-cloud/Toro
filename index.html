@@ -230,7 +230,7 @@ a.btn{color:var(--ink);text-decoration:none;display:inline-flex;align-items:cent
 .p-x:hover{color:var(--ink)}
 .p-x svg{width:22px;height:22px}
 .p-body{overflow-y:auto;padding:8px 20px 28px}
-.p-in{max-width:660px;margin:0 auto;display:grid;gap:22px;align-content:start;animation:qIn .4s var(--ease)}
+.p-in{max-width:660px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:22px;align-content:start;animation:qIn .4s var(--ease)}
 @keyframes qIn{from{opacity:.001;transform:translateX(24px)}}
 .p-in h2{font-size:clamp(23px,4vw,31px);font-weight:800;line-height:1.2;letter-spacing:-.02em}
 .p-kind{font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:var(--c)}
@@ -688,6 +688,40 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
 .acct-text{flex:1 1 280px}
 .acct-text p{margin:4px 0 0;font-size:14px}
 .acct .btn.cta{padding:10px 18px}
+/* Sign-in */
+.signin{padding:7px 14px;border-radius:99px;font-size:13px}
+@media (max-width:640px){ .signin{display:none} }
+.auth{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px);background:rgba(0,0,0,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:fadeIn .25s ease;overflow-y:auto}
+.auth[hidden]{display:none}
+.auth-card{position:relative;width:min(420px,100%);box-sizing:border-box;background:linear-gradient(180deg,#0E0E11,#08080A);border:1px solid var(--line-2);border-radius:22px;padding:34px 28px 24px;display:grid;gap:14px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(216,179,90,.12);animation:qIn .35s var(--ease)}
+.auth-card:focus{outline:none}
+.auth-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:99px;border:0;background:none;color:var(--muted);display:grid;place-items:center}
+.auth-x:hover{background:var(--hover);color:var(--ink)} .auth-x svg{width:18px;height:18px}
+.auth-logo{width:64px;height:auto;margin:0 auto 2px;filter:drop-shadow(0 6px 18px rgba(216,179,90,.25))}
+.auth-card h2{margin:0;font-size:26px;letter-spacing:-.01em}
+.auth-card .sub{margin:0;font-size:14px;line-height:1.5}
+.abtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:50px;border-radius:12px;font-size:15px;font-weight:700;border:1px solid transparent;transition:filter .2s,transform .15s var(--ease),border-color .2s}
+.abtn:active{transform:scale(.985)} .abtn svg{width:20px;height:20px;flex:none}
+.abtn.apple{background:#fff;color:#000} .abtn.apple:hover{filter:brightness(.92)}
+.abtn.google{background:#131314;color:#E3E3E3;border-color:#8E918F} .abtn.google:hover{background:#1c1c1e}
+.abtn.mail{background:var(--gold);color:#000} .abtn.mail:hover{filter:brightness(1.08)}
+.abtn:disabled{opacity:.5;cursor:default}
+.auth-btns{display:grid;gap:10px;margin-top:6px}
+.auth-or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.auth-or::before,.auth-or::after{content:"";flex:1;height:1px;background:var(--line)}
+#authForm{display:grid;gap:10px}
+#authEmail{height:50px;box-sizing:border-box;width:100%;border-radius:12px;border:1px solid var(--line-2);background:#050506;padding:0 16px;font-size:16px;color:var(--ink);text-align:left}
+#authEmail:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(216,179,90,.15)}
+.auth .msg{margin:0;min-height:0;font-size:13px;line-height:1.5}
+.auth .msg:empty{display:none}
+.auth-sent{display:grid;gap:8px;padding:16px;border:1px solid rgba(216,179,90,.3);border-radius:14px;background:rgba(216,179,90,.06);text-align:left}
+.auth-sent b{font-size:15px} .auth-sent p{margin:0;font-size:14px}
+.auth-link{background:none;border:0;color:var(--gold);font-weight:700;font-size:13px;padding:4px}
+.auth-link:hover{text-decoration:underline}
+.auth-fine{margin:2px 0 0;font-size:12px;line-height:1.5}
+.auth-skip{justify-self:center;font-size:13px}
+.acct-cta{display:flex;gap:8px;flex-wrap:wrap}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .fc{display:flex;align-items:center;gap:8px;font-size:13px}
 .fc .tkr{color:var(--gold-hi);letter-spacing:.12em}
 .flist{display:grid;margin-top:10px}
@@ -705,6 +739,17 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
 .status.closed .dot{background:var(--muted);animation:none}
 .data-note{font-size:12px;color:var(--muted);margin:-8px 2px 0;font-weight:600}
 .mkt-loading #v-trade .chartbox,.mkt-loading #v-trade .px-big,.mkt-loading #v-trade .px-chg,.mkt-loading .tape,.mkt-loading #list .pxc,.mkt-loading #v-portfolio .rh-hero{opacity:.12;transition:opacity .4s}
+.calc{display:flex;align-items:center;gap:10px;border:1px solid var(--line-2);background:#070708;border-radius:14px;padding:6px 18px;max-width:380px;box-sizing:border-box;width:100%;transition:border-color .2s,box-shadow .2s}
+.calc:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(216,179,90,.15)}
+.calc input{flex:1;min-width:0;border:0;background:none;outline:none;font-size:30px;font-weight:700;padding:10px 0;font-variant-numeric:tabular-nums;color:var(--ink)}
+.calc .pre,.calc .suf{font-size:22px;font-weight:700;color:var(--muted)}
+.calc .pre:empty,.calc .suf:empty{display:none}
+.calc.right{border-color:var(--up);background:var(--up-bg)} .calc.wrong{border-color:var(--down);background:var(--down-bg)}
+.calc-hint{margin:-10px 0 0;font-size:13px}
+.cert-chip{display:inline-flex;align-items:center;gap:6px;color:var(--gold);border:1px solid rgba(216,179,90,.45);border-radius:99px;padding:4px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.cert-chip svg{width:14px;height:14px}
+.cert-chip.sm{padding:2px 8px;font-size:11px}
+.final-unit .unit-head{border-bottom-color:rgba(216,179,90,.35)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .emblem.draw path{stroke-dashoffset:0}
@@ -749,6 +794,7 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
       <button role="tab" data-tab="profile" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</button>
     </nav>
     <div class="meters" id="meters"></div>
+    <button class="btn signin" id="signInBtn" type="button">Sign in</button>
     <button class="me-chip" id="meChip" type="button" aria-label="Your profile"><span class="me-av sm" id="chipAv">Y</span><span class="me-tk" id="chipTk">YOU</span><span class="num" id="chipPx"></span><span class="num" id="chipCh"></span></button>
     <button class="meter snd" id="sndBtn" type="button" aria-pressed="true" aria-label="Sound on" title="Sound on"></button>
   </div>
@@ -978,6 +1024,28 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
 <div class="scrim" id="scrim" hidden></div>
 <aside class="sheet" id="sheet" hidden aria-modal="true" role="dialog" aria-labelledby="dName"></aside>
 <div class="player" id="player" hidden role="dialog" aria-modal="true" aria-label="Lesson"></div>
+<div class="auth" id="auth" hidden role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="auth-card" tabindex="-1">
+    <button class="auth-x" id="authX" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <img class="auth-logo" src="assets/toro-emb.png" alt="" width="64" height="45">
+    <h2 id="authTitle">Create your account</h2>
+    <p class="sub muted" id="authSub">Save your lessons, streak, practice cash and personal stock, and pick up where you left off on any device.</p>
+    <div class="auth-btns">
+      <button class="abtn apple" type="button" data-provider="apple"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.62c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.47.83-.72 0-1.82-.81-2.99-.79-1.54.02-2.96.9-3.75 2.27-1.6 2.78-.41 6.89 1.15 9.14.76 1.1 1.67 2.34 2.86 2.3 1.15-.05 1.58-.74 2.97-.74 1.38 0 1.77.74 2.98.72 1.23-.02 2.01-1.12 2.76-2.23.87-1.28 1.23-2.52 1.25-2.58-.03-.01-2.39-.92-2.4-3.66zM14.1 5.86c.63-.77 1.06-1.83.94-2.89-.91.04-2.01.61-2.66 1.37-.58.67-1.1 1.76-.96 2.8 1.01.08 2.05-.52 2.68-1.28z"/></svg>Continue with Apple</button>
+      <button class="abtn google" type="button" data-provider="google"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Continue with Google</button>
+    </div>
+    <div class="auth-or" id="authOr">or</div>
+    <template id="authMailIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></template>
+    <div id="authMailBox">
+      <form id="authForm" novalidate><input id="authEmail" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com" aria-label="Email address">
+      <button class="abtn mail" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg>Continue with email</button></form>
+    </div>
+    <p class="msg" id="authMsg" role="status"></p>
+    <p class="auth-fine muted" id="authFine">No password needed. With email, we send you a secure sign-in link.</p>
+    <button class="auth-link" type="button" id="authMode">Already have an account? Sign in</button>
+    <button class="btn ghost auth-skip" type="button" id="authSkip">Continue without an account</button>
+  </div>
+</div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <canvas id="fx" aria-hidden="true"></canvas>
 
@@ -1244,7 +1312,9 @@ const Sound=(()=>{
   const TAB_ORDER=['learn','trade','portfolio','tools','profile'], RANGE_ORDER=['1D','1W','1M','3M','1Y','ALL'];
   function pick(t){
     const m=sel=>t.matches(sel);
-    if(m('#sndBtn,#pCheck,#dGo,[data-buy]')) return null;          // these play their own sounds
+    if(m('#sndBtn,#pCheck,#dGo,[data-buy],#signInBtn,[data-auth]')) return null;          // these play their own sounds
+    if(m('[data-provider],.abtn.mail')) return ['forward'];
+    if(m('#authX,#authSkip')) return ['back'];
     if(m('[data-pick]')) return ['select'];
     if(m('nav.tabs [data-tab]')) return ['tab', TAB_ORDER.indexOf(t.dataset.tab)];
     if(m('[data-course]')) return ['course', COURSES.findIndex(c=>c.id===t.dataset.course)];
@@ -1316,7 +1386,7 @@ function addXP(n){
 }
 
 /* Nodes: each unit = 3 lessons + 1 review */
-function nodesOf(c){ const out=[]; COURSE[c].units.forEach((u,ui)=>{ u.lessons.forEach((_,li)=>out.push({c,u:ui,l:li,key:`${c}.${ui}.${li}`})); out.push({c,u:ui,l:'r',key:`${c}.${ui}.r`}); }); return out; }
+function nodesOf(c){ const out=[]; COURSE[c].units.forEach((u,ui)=>{ u.lessons.forEach((_,li)=>out.push({c,u:ui,l:li,key:`${c}.${ui}.${li}`})); out.push({c,u:ui,l:'r',key:`${c}.${ui}.r`}); }); if(COURSE[c].final) out.push({c,u:'final',l:'final',key:`${c}.final`}); return out; }
 function courseProgress(c){ const n=nodesOf(c); const d=n.filter(x=>Lr().done[x.key]).length; return {done:d,total:n.length,pct:Math.round(d/n.length*100)}; }
 function isUnlocked(c,idx){ if(idx===0) return true; const n=nodesOf(c); return !!Lr().done[n[idx-1].key]; }
 
@@ -1344,6 +1414,8 @@ const BADGES = [
   {id:'unit',     name:'Unit cleared',  desc:'Pass any unit review',            icon:'trophy', color:'#C98A12', test:()=>Object.keys(Lr().done).some(k=>k.endsWith('.r'))},
   {id:'rounded',  name:'Well-rounded',  desc:'Finish lessons in 3 courses',     icon:'book',   color:'#C94F78', test:()=>new Set(Object.keys(Lr().done).map(k=>k.split('.')[0])).size>=3},
   {id:'global',   name:'Globetrotter',  desc:'Finish Global Supply Chains unit 1', icon:'globe', color:'#17929F', test:()=>!!Lr().done['supply.0.r']},
+  {id:'certified',name:'Certified',     desc:'Pass a course’s final test',      icon:'shield', color:'#D8B35A', test:()=>Object.keys(Lr().certs||{}).length>=1},
+  {id:'expert',   name:'Expert',        desc:'Get certified in all 5 courses',  icon:'star',   color:'#D8B35A', test:()=>Object.keys(Lr().certs||{}).length>=5},
   {id:'graduate', name:'Graduate',      desc:'Complete a whole course',         icon:'trophy', color:'#7A5CC4', test:()=>COURSES.some(c=>courseProgress(c.id).pct===100)},
 ];
 function checkBadges(){
@@ -1399,9 +1471,9 @@ function renderLearn(){
   const firstOpen = nodes.findIndex(n=>!Lr().done[n.key]);
   let html = `<header class="course-head"><div class="ch-text"><span class="eyebrow">Course</span><h1>${esc(c.name)}</h1><p class="muted">${esc(c.blurb)}</p></div>
     <div class="cp"><div class="cp-num"><b>${prog.pct}%</b><span class="muted">${prog.done} of ${prog.total} complete</span></div><div class="bar"><span style="width:${prog.pct}%"></span></div></div></header>`;
-  if(firstOpen>=0){ const n=nodes[firstOpen], t=n.l==='r'?`Unit ${n.u+1} review`:c.units[n.u].lessons[n.l].t;
-    html += `<div class="resume"><div class="rs-text"><span class="eyebrow">${firstOpen===0?'Begin':'Up next'} · Unit ${n.u+1}</span><h2>${esc(t)}</h2>
-      <p class="muted">${n.l==='r'?'Eight mixed questions from this unit.':'A short reading, then five questions.'}</p></div>
+  if(firstOpen>=0){ const n=nodes[firstOpen], fin=n.l==='final', t=fin?'Final test':n.l==='r'?`Unit ${n.u+1} review`:c.units[n.u].lessons[n.l].t;
+    html += `<div class="resume"><div class="rs-text"><span class="eyebrow">${firstOpen===0?'Begin':'Up next'} · ${fin?'Real-world problems':'Unit '+(n.u+1)}</span><h2>${esc(t)}</h2>
+      <p class="muted">${fin?'Ten real situations and calculations. Score 8 or more to get certified.':n.l==='r'?'Eight mixed questions from this unit.':'A short reading, then five questions.'}</p></div>
       <button class="btn cta" type="button" data-node="${firstOpen}">${firstOpen===0?'Start course':'Continue'}<span aria-hidden="true">→</span></button></div>`; }
   else html += `<div class="resume"><div class="rs-text"><span class="eyebrow">Complete</span><h2>You finished ${esc(c.name)}</h2><p class="muted">Replay any lesson for practice, or choose another course.</p></div></div>`;
   let idx=0;
@@ -1418,6 +1490,15 @@ function renderLearn(){
     }
     html += `</ol></section>`;
   });
+  if(c.final){
+    const n=nodes[idx], done=!!Lr().done[n.key], open=isUnlocked(cur,idx), current=idx===firstOpen, best=(Lr().certs||{})[cur];
+    html += `<section class="unit final-unit"><div class="unit-head"><div><span class="eyebrow">Final test</span><h2>Real-world problems</h2></div>
+      ${best?`<span class="cert-chip">${I.trophy}Certified · ${best}/10</span>`:''}</div><ol class="steps">
+      <li class="step ${done?'done':''} ${current?'current':''} ${open?'':'locked'}" style="--i:${idx}"><button type="button" data-node="${idx}" aria-label="Final test${done?' (passed)':open?'':' (locked)'}">
+        <span class="mark">${done?I.check:''}</span><span class="st-body"><span class="st-title">Final test: what would you do?</span>
+        <span class="st-meta">10 questions · real situations and calculations · pass with 8 · 50 XP and $500 trading cash</span></span>
+        ${done?'<span class="st-act">Retake</span>':open?'<span class="st-act go">Start</span>':`<span class="st-act">${I.lock}</span>`}</button></li></ol></section>`;
+  }
   el('pathWrap').innerHTML = html;
   renderSide();
 }
@@ -1462,6 +1543,10 @@ function openGuide(c, ui){
 let P=null;
 function startLesson(c,u,l){
   regenHearts();
+  if(l==='final'){ const qs=shuffle(COURSE[c].final).slice(0,10);
+    P = {c,u,l,key:`${c}.final`, exam:true, isReview:false, lesson:null, title:`${COURSE[c].name} · Final test`, queue:qs.map(q=>({...q})), total:qs.length,
+         correct:0, answered:0, mistakes:0, start:Date.now(), replay:!!Lr().done[`${c}.final`], phase:'intro', checked:false, ok:false, sel:null, quit:false};
+    openPlayer(); return; }
   const unit=COURSE[c].units[u];
   const isReview = l==='r';
   if(Lr().hearts<=0){ P={c,u,l,phase:'nohearts',queue:[],total:1,correct:0}; openPlayer(); return; }
@@ -1472,36 +1557,42 @@ function startLesson(c,u,l){
   openPlayer();
 }
 function openPlayer(){ el('player').hidden=false; document.body.style.overflow='hidden'; renderPlayer(); }
-function closePlayer(){ P=null; el('player').hidden=true; document.body.style.overflow=''; renderTab(); }
+function closePlayer(){ const nudge=P&&P.nudgeAuth; P=null; el('player').hidden=true; document.body.style.overflow=''; renderTab();
+  if(nudge) setTimeout(()=>Cloud.open('create', true), 450); }
 
 function prep(q){
   if(q.prep) return q.prep;
   const p={};
   if(q.t==='mc'||q.t==='fill') p.o=shuffle(q.o.map((_,i)=>i));
+  if(q.t==='calc') p.val='';
   if(q.t==='order'){ let b; do{ b=shuffle(q.items.map((_,i)=>i)); }while(b.every((v,i)=>v===i) && q.items.length>1); p.bank=b; p.ans=[]; }
   if(q.t==='match'){ p.L=shuffle(q.pairs.map((_,i)=>i)); p.R=shuffle(q.pairs.map((_,i)=>i)); p.done=[]; p.selL=null; p.selR=null; p.miss=0; }
   return (q.prep=p);
 }
-const KIND = {mc:'Choose the right answer', tf:'True or false?', fill:'Fill in the blank', match:'Tap the matching pairs', order:'Put these in order'};
+const KIND = {calc:'Work it out', mc:'Choose the right answer', tf:'True or false?', fill:'Fill in the blank', match:'Tap the matching pairs', order:'Put these in order'};
 
 function renderPlayer(){
   const pl=el('player'); const c=COURSE[P.c];
   pl.style.setProperty('--c', c.color);
-  const prog = P.phase==='end' ? 1 : P.correct/P.total;
+  const prog = P.phase==='end' ? 1 : (P.exam ? P.answered : P.correct)/P.total;
   const top = `<div class="p-top"><button class="p-x" type="button" id="pX" aria-label="Quit lesson">${I.x}</button>
     <div class="bar" role="progressbar" aria-valuenow="${Math.round(prog*100)}" aria-valuemin="0" aria-valuemax="100"><span style="width:${prog*100}%"></span></div>
-    <span class="meter heart ${Lr().hearts?'':'off'}">${I.heart}<span>${Lr().hearts}</span></span></div>`;
+    ${P.exam ? `<span class="meter num">${Math.min(P.answered+(P.checked?0:1),P.total)}/${P.total}</span>` : `<span class="meter heart ${Lr().hearts?'':'off'}">${I.heart}<span>${Lr().hearts}</span></span>`}</div>`;
   let body='', foot='';
   if(P.phase==='tip'){
     body = `<div class="p-in"><div class="p-kind">${esc(c.name)} · Unit ${P.u+1}</div><h2>${esc(P.title)}</h2>
       <div class="keyidea"><span class="eyebrow">Key idea</span><p>${esc(P.lesson.tip)}</p></div></div>`;
     foot = `<div class="p-foot"><div class="p-foot-in"><span class="muted" style="font-size:14px;flex:1">${P.total} questions · ${P.replay?'5':'10+'} XP</span><button class="btn chunky gold" type="button" id="pGo">Start lesson</button></div></div>`;
+  } else if(P.phase==='intro'){
+    body = `<div class="p-in"><div class="p-kind">${esc(c.name)} · Final test</div><h2>Real-world problems</h2>
+      <div class="keyidea"><span class="eyebrow">How it works</span><p>Ten situations you could really face, plus calculations you type in yourself. There are no hearts to lose and no second tries. Score 8 or more to get certified, and see the worked answer after every question.</p></div></div>`;
+    foot = `<div class="p-foot"><div class="p-foot-in"><span class="muted" style="font-size:14px;flex:1">${P.total} questions · pass with 8</span><button class="btn chunky gold" type="button" id="pGo">Start test</button></div></div>`;
   } else if(P.phase==='q'){
     const q=P.queue[0], p=prep(q);
-    body = `<div class="p-in"><div class="p-kind">${P.isReview?'Unit review · ':''}${KIND[q.t]}</div>${renderQuestion(q,p)}</div>`;
+    body = `<div class="p-in"><div class="p-kind">${P.exam?'Final test · ':P.isReview?'Unit review · ':''}${q.scene?'What would you do?':KIND[q.t]}</div>${renderQuestion(q,p)}</div>`;
     foot = renderFoot(q);
   } else if(P.phase==='end'){
-    body = renderEnd(); foot = `<div class="p-foot"><div class="p-foot-in">${P.apply?`<a class="btn" href="${P.apply.href}" id="pApply">${esc(P.apply.label)}</a>`:''}<button class="btn chunky gold" type="button" id="pDone">Continue</button></div></div>`;
+    body = renderEnd(); foot = `<div class="p-foot"><div class="p-foot-in">${P.summary&&P.summary.exam&&!P.summary.pass?'<button class="btn" type="button" id="pRetry">Try again</button>':''}${P.apply?`<a class="btn" href="${P.apply.href}" id="pApply">${esc(P.apply.label)}</a>`:''}<button class="btn chunky gold" type="button" id="pDone">Continue</button></div></div>`;
   } else if(P.phase==='nohearts'){
     const can=Lr().gems>=30;
     body = `<div class="p-in end">${emblem('mascot')}<h2>Out of hearts</h2><p class="muted" style="margin:0;max-width:420px">Hearts refill one every 20 minutes. Your next heart arrives in ${nextHeartMins()} min. You can also refill all 5 for 30 credits.</p></div>`;
@@ -1515,6 +1606,9 @@ function renderPlayer(){
 function renderQuestion(q,p){
   const locked=P.checked;
   if(q.t==='mc') return `<h2>${esc(q.q)}</h2><div class="opts">${p.o.map((oi,k)=>`<button class="opt ${locked&&oi===0?'right':''} ${locked&&P.sel===oi&&oi!==0?'wrong':''}" type="button" data-pick="${oi}" aria-pressed="${P.sel===oi}" ${locked?'disabled':''}><kbd>${k+1}</kbd>${esc(q.o[oi])}</button>`).join('')}</div>`;
+  if(q.t==='calc') return `<h2>${esc(q.q)}</h2><label class="calc ${locked?(P.ok?'right':'wrong'):''}" for="calcIn"><span class="pre">${esc(q.pre)}</span>
+      <input id="calcIn" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="0" aria-label="Your answer" value="${esc(p.val)}" ${locked?'disabled':''}>
+      <span class="suf">${esc(q.suf.trim())}</span></label><p class="muted calc-hint">Type a number. Commas are fine.</p>`;
   if(q.t==='tf') return `<h2>${esc(q.q)}</h2><div class="opts tf">${[true,false].map((v,k)=>`<button class="opt ${locked&&v===q.a?'right':''} ${locked&&P.sel===v&&v!==q.a?'wrong':''}" type="button" data-pick="${v}" aria-pressed="${P.sel===v}" ${locked?'disabled':''}><kbd>${k+1}</kbd>${v?'True':'False'}</button>`).join('')}</div>`;
   if(q.t==='fill'){ const parts=q.q.split('___'); const filled=P.sel!=null?esc(q.o[P.sel]):'&nbsp;';
     return `<p class="sentence">${esc(parts[0])}<span class="blank" style="${locked?`color:var(${P.ok?'--up':'--down'})`:''}">${filled}</span>${esc(parts[1]||'')}</p>
@@ -1531,9 +1625,12 @@ function answerText(q){
   if(q.t==='mc'||q.t==='fill') return q.o[0];
   if(q.t==='tf') return q.a?'True':'False';
   if(q.t==='order') return q.items.join(' → ');
+  if(q.t==='calc') return `${q.pre}${q.a.toLocaleString('en-US',{maximumFractionDigits:2})}${q.suf}`;
   return '';
 }
+const calcNum = v => { const x=parseFloat(String(v).replace(/[,$%\s]/g,'')); return Number.isFinite(x) ? x : null; };
 function ready(q){ const p=prep(q);
+  if(q.t==='calc') return calcNum(p.val)!=null;
   if(q.t==='order') return p.ans.length===q.items.length;
   if(q.t==='match') return false;
   return P.sel!=null; }
@@ -1551,10 +1648,11 @@ function renderFoot(q){
 function wirePlayer(){
   const pl=el('player');
   const on=(id,f)=>{ const b=el(id); if(b) b.onclick=f; };
-  on('pX',()=>{ if(P.phase==='q' && (P.correct||P.checked)){ P.quit=true; renderPlayer(); } else closePlayer(); });
+  on('pX',()=>{ if(P.phase==='q' && (P.correct||P.checked||P.answered)){ P.quit=true; renderPlayer(); } else closePlayer(); });
   on('pQuitNo',()=>{ P.quit=false; renderPlayer(); });
   on('pQuitYes',closePlayer);
   on('pGo',()=>{ P.phase='q'; renderPlayer(); });
+  on('pRetry',()=>{ const {c,u,l}=P; closePlayer(); startLesson(c,u,l); });
   on('pCheck',check);
   on('pNext',next);
   on('pDone',closePlayer);
@@ -1563,6 +1661,9 @@ function wirePlayer(){
     if(P.queue.length){ P.phase='q'; renderPlayer(); } else { const {c,u,l}=P; closePlayer(); startLesson(c,u,l); } });
   if(P.phase!=='q'||P.checked) return;
   const q=P.queue[0], p=prep(q);
+  const ci=el('calcIn');
+  if(ci){ ci.focus(); ci.setSelectionRange(ci.value.length, ci.value.length);
+    ci.addEventListener('input',()=>{ p.val=ci.value; const b=el('pCheck'); if(b) b.disabled=!ready(q); }); }
   pl.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{ const v=b.dataset.pick; P.sel = q.t==='tf' ? v==='true' : +v; renderPlayer(); });
   pl.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.add; if(!p.ans.includes(i)) p.ans.push(i); renderPlayer(); });
   pl.querySelectorAll('[data-unpick]').forEach(b=>b.onclick=()=>{ p.ans.splice(+b.dataset.unpick,1); renderPlayer(); });
@@ -1570,7 +1671,7 @@ function wirePlayer(){
     if(b.dataset.ml!=null) p.selL = p.selL===+b.dataset.ml ? null : +b.dataset.ml; else p.selR = p.selR===+b.dataset.mr ? null : +b.dataset.mr;
     if(p.selL!=null && p.selR!=null){
       if(p.selL===p.selR){ p.done.push(p.selL); p.selL=p.selR=null; Sound.play(p.done.length===q.pairs.length?'correct':'pair');
-        if(p.done.length===q.pairs.length){ P.checked=true; P.ok=true; P.correct++; } renderPlayer(); }
+        if(p.done.length===q.pairs.length){ P.checked=true; P.ok=true; P.correct++; if(P.exam) P.answered++; } renderPlayer(); }
       else { const a=p.selL, r=p.selR; p.selL=p.selR=null; p.miss++; Sound.play('wrong'); renderPlayer();
         pl.querySelector(`[data-ml="${a}"]`)?.classList.add('miss'); pl.querySelector(`[data-mr="${r}"]`)?.classList.add('miss'); }
     } else renderPlayer();
@@ -1582,18 +1683,34 @@ function check(){
   if(q.t==='mc'||q.t==='fill') P.ok = P.sel===0;
   else if(q.t==='tf') P.ok = P.sel===q.a;
   else if(q.t==='order') P.ok = p.ans.every((v,i)=>v===i);
+  else if(q.t==='calc') P.ok = Math.abs(calcNum(p.val)-q.a) <= (q.tol ?? Math.max(0.01, Math.abs(q.a)*0.005));
   P.checked=true;
-  if(P.ok){ P.correct++; Sound.play('correct'); }
+  if(P.exam){ P.answered++; if(P.ok){ P.correct++; Sound.play('correct'); } else { P.mistakes++; Sound.play('wrong'); } }
+  else if(P.ok){ P.correct++; Sound.play('correct'); }
   else { P.mistakes++; loseHeart(); P.queue.push({...q, prep:null}); Sound.play('wrong'); }
   renderPlayer(); renderMeters();
 }
 function next(){
   P.queue.shift(); P.checked=false; P.ok=false; P.sel=null;
-  if(Lr().hearts<=0 && P.queue.length){ P.phase='nohearts'; renderPlayer(); return; }
+  if(!P.exam && Lr().hearts<=0 && P.queue.length){ P.phase='nohearts'; renderPlayer(); return; }
   if(!P.queue.length) return finish();
   renderPlayer();
 }
+function finishExam(){
+  const score=P.correct, pass=score>=8, first=!Lr().done[P.key], l=Lr();
+  l.certs=l.certs||{};
+  const xp = pass ? (first?50:10) : 5, cash = pass&&first ? 500 : 0, gems = pass&&first ? 30 : 0;
+  addXP(xp); l.gems+=gems;
+  if(cash){ S.cash+=cash; S.deposits=(S.deposits||0)+cash; S.txns.push({t:Date.now(),s:'CASH',side:'deposit',qty:0,px:cash}); }
+  if(pass){ l.done[P.key]=true; l.certs[P.c]=Math.max(l.certs[P.c]||0, score); }
+  day().lessons++; const extended=bumpStreak();
+  save(); checkQuests(); checkBadges(); renderMeters();
+  P.summary={exam:true, pass, score, xp, gems, cash, secs:Math.round((Date.now()-P.start)/1000), extended};
+  P.phase='end'; renderPlayer(); Sound.play(pass?'complete':'chime');
+  el('player').querySelectorAll('[data-count]').forEach(n=>countUp(n, +n.dataset.count, n.dataset.suffix||''));
+}
 function finish(){
+  if(P.exam) return finishExam();
   const perfect=P.mistakes===0;
   const xp = P.replay ? 5 : (P.isReview?20:10) + (perfect?5:0);
   const gems = P.replay ? 0 : (P.isReview?15:5) + (perfect?5:0);
@@ -1601,6 +1718,7 @@ function finish(){
   const cash = P.replay ? 10 : (P.isReview?150:50) + (perfect?25:0);
   S.cash+=cash; S.deposits=(S.deposits||0)+cash; S.txns.push({t:Date.now(),s:'CASH',side:'deposit',qty:0,px:cash});
   Lr().done[P.key]=true; if(perfect) Lr().perfect++;
+  if(!P.replay && Cloud.on && !Cloud.user && !Lr().authAsked){ Lr().authAsked=true; P.nudgeAuth=true; }   // offer an account once, after the first lesson
   day().lessons++;
   const extended = bumpStreak();
   save(); checkQuests(); checkBadges(); renderMeters();
@@ -1614,6 +1732,16 @@ function finish(){
 }
 function renderEnd(){
   const s=P.summary, t=`${Math.floor(s.secs/60)}:${String(s.secs%60).padStart(2,'0')}`;
+  if(s.exam) return `<div class="p-in end">${emblem('mascot draw')}<span class="eyebrow">${esc(COURSE[P.c].name)} · Final test</span>
+    <h2>${s.pass?'Certified':'Not yet'}</h2>
+    <p class="muted" style="margin:0;max-width:440px">${s.pass?`You passed with ${s.score} out of ${P.total}. The certificate is on your profile.`:`You scored ${s.score} out of ${P.total}. You need 8 to pass. Review the units, then try again with new questions.`}</p>
+    <div class="stats3">
+      <div><span class="eyebrow">Score</span><b><span data-count="${s.score}">${s.score}</span>/${P.total}</b></div>
+      <div><span class="eyebrow">XP earned</span><b data-count="${s.xp}">${s.xp}</b></div>
+      <div><span class="eyebrow">Time</span><b>${t}</b></div>
+    </div>
+    ${s.pass?`<div class="crow end-candles" aria-hidden="true">${candleRow(16, Date.now()%1e6)}</div>`:''}
+    <p class="muted end-note">${s.extended?`${I.flame}<span>${Lr().streak.count}-day streak</span>`:''}${s.gems?`${I.gem}<span>+${s.gems} credits</span>`:''}${s.cash?`${I.chart}<span>+${$(s.cash)} trading cash</span>`:''}</p></div>`;
   return `<div class="p-in end">${emblem('mascot draw')}<span class="eyebrow">${esc(P.title)}</span><h2>${s.perfect?'Flawless':'Lesson complete'}</h2>
     <div class="stats3">
       <div><span class="eyebrow">XP earned</span><b data-count="${s.xp}">${s.xp}</b></div>
@@ -1739,7 +1867,7 @@ function renderProfile(){
     <div class="shop-item"><span style="color:var(--gem)">${I.shield}</span><div><b>Streak freeze</b><small>Covers one missed day · you have ${l.streak.freezes}/2</small></div>
       <button class="btn" type="button" data-buy="freeze" ${l.gems<50||l.streak.freezes>=2?'disabled':''}>50 credits</button></div>`;
   el('cprog').innerHTML = COURSES.map(c=>{ const p=courseProgress(c.id);
-    return `<div style="--c:${c.color}"><span class="ci">${COURSE_ICON[c.id]}</span><b style="font-size:14px">${esc(c.name)}</b><span class="num muted" style="font-size:13px">${p.done}/${p.total}</span>
+    return `<div style="--c:${c.color}"><span class="ci">${COURSE_ICON[c.id]}</span><b style="font-size:14px">${esc(c.name)}</b><span class="num muted" style="font-size:13px">${(Lr().certs||{})[c.id]?`<span class="cert-chip sm">${I.trophy}Certified ${(Lr().certs)[c.id]}/10</span>`:`${p.done}/${p.total}`}</span>
       <div class="bar" style="grid-column:2 / span 2"><span style="width:${p.pct}%"></span></div></div>`; }).join('');
   el('badges').innerHTML = BADGES.map(b=>{ const got=l.badges.includes(b.id);
     return `<div class="badge ${got?'':'locked'}"><span class="medal" style="background:${b.color}">${I[b.icon]}</span><b>${b.name}</b><small>${b.desc}</small></div>`; }).join('');
@@ -2467,9 +2595,11 @@ const Cloud = (()=>{
       await loadLib();
       sb = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, {auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'pkce'}});
       const {data} = await sb.auth.getSession(); user = data?.session?.user || null;
-      sb.auth.onAuthStateChange((ev, session)=>{ const was=user; user=session?.user||null; if(user && !was) firstSync(); if(!user) render(); });
+      sb.auth.onAuthStateChange((ev, session)=>{ const was=user; user=session?.user||null;
+        if(user && !was){ closeAuth(); toast(`Signed in${user.email?' as '+user.email:''}`, I.check); Sound.play('complete'); firstSync().then(adoptName); }
+        if(!user) render(); });
       saveHook = ()=>queue();
-      if(user) await firstSync(); else render();
+      if(user){ await firstSync(); adoptName(); } else render();
     }catch(e){ status='error'; render(); }
   }
   // On sign-in: keep whichever copy has more learning, then upload
@@ -2528,19 +2658,12 @@ const Cloud = (()=>{
   async function unfollow(id){ await sb.from('follows').delete().eq('follower', user.id).eq('followee', id); loadFriends(); }
   function render(){
     const box=el('acct'), fr=el('friends');
-    if(!on){ box.hidden=true; fr.hidden=true; return; }
+    el('signInBtn').hidden = !!user;
     box.hidden=false;
     if(!user){
       fr.hidden=true;
-      box.innerHTML=`<div class="acct-text"><h2>Sync across your devices</h2><p class="muted">Sign in to keep your lessons, practice account and personal stock on your phone and computer, and to follow friends’ stocks.</p></div>
-        <form class="row" id="acctForm"><input class="tin" id="acctEmail" type="email" required autocomplete="email" placeholder="you@email.com" aria-label="Email" style="width:250px;text-align:left">
-        <button class="btn cta" type="submit">Email me a sign-in link</button>${CFG.google && !NATIVE ? '<button class="btn" type="button" id="acctGoogle">Continue with Google</button>':''}</form>
-        <p class="msg" id="acctMsg" style="text-align:left"></p>`;
-      el('acctForm').addEventListener('submit',async e=>{ e.preventDefault(); const m=el('acctMsg'); m.className='msg'; m.textContent='Sending…';
-        const {error} = await sb.auth.signInWithOtp({email:el('acctEmail').value.trim(), options:{emailRedirectTo: NATIVE ? (CFG.siteUrl||location.origin)+'/profile' : location.origin+'/profile'}});
-        if(error){ m.className='msg err'; m.textContent='Couldn’t send the link. Check the email address and try again.'; Sound.play('denied'); }
-        else { m.textContent='Check your inbox. Open the link on this device to sign in.'; Sound.play('placed'); } });
-      el('acctGoogle')?.addEventListener('click',()=>sb.auth.signInWithOAuth({provider:'google', options:{redirectTo: location.origin+'/profile'}}));
+      box.innerHTML=`<div class="acct-text"><h2>Save your progress</h2><p class="muted">Create a free account with Apple, Google or email to keep your lessons, practice account and personal stock on every device, and to follow friends’ stocks.</p></div>
+        <div class="acct-cta"><button class="btn cta" type="button" data-auth="create">Create account</button><button class="btn" type="button" data-auth="signin">Sign in</button></div>`;
       return;
     }
     fr.hidden=false;
@@ -2554,9 +2677,67 @@ const Cloud = (()=>{
   el('friendList').addEventListener('click',e=>{ const b=e.target.closest('[data-unfollow]'); if(b) unfollow(b.dataset.unfollow); });
   el('copyCode').addEventListener('click',()=>{ const c=S.learn.friendCode; if(!c) return; const fail=()=>toast(`Your code: ${c}`);
     try{ navigator.clipboard.writeText(c).then(()=>toast('Friend code copied'),fail); }catch(e){ fail(); } });
+
+  /* Sign-in screen: Apple, Google or an emailed link. On the phone app the provider page opens in an in-app browser
+     and comes back through the universal link (/profile?code=…), which handleUrl turns into a session. */
+  const redirect = () => (NATIVE ? (CFG.siteUrl||'').replace(/\/$/,'') : location.origin) + '/profile';
+  let authMode='create', lastFocus=null;
+  function authMsg(t, err){ const m=el('authMsg'); m.className='msg'+(err?' err':''); m.textContent=t||''; }
+  function setMode(m){ authMode=m;
+    el('authTitle').textContent = m==='create' ? 'Create your account' : 'Welcome back';
+    el('authSub').textContent = m==='create' ? 'Save your lessons, streak, practice cash and personal stock, and pick up where you left off on any device.' : 'Sign in to load your progress on this device.';
+    el('authMode').textContent = m==='create' ? 'Already have an account? Sign in' : 'New to Toro? Create an account'; }
+  function openAuth(mode, nudge){
+    if(user) return;
+    setMode(mode||'create'); authMsg(''); resetMail();
+    // Hide providers the project hasn't switched on; on the preview (no Supabase) show everything so the screen can be seen
+    const show = p => !on || !!CFG[p];
+    el('auth').querySelectorAll('[data-provider]').forEach(b=>{ b.hidden=!show(b.dataset.provider); b.disabled=false; });
+    el('authOr').hidden = !(show('apple')||show('google'));
+    el('authSkip').textContent = nudge ? 'Not now' : 'Continue without an account';
+    if(!on) authMsg('Accounts aren’t connected on this preview yet. Your progress is saved on this device.');
+    lastFocus=document.activeElement; el('auth').hidden=false; document.body.style.overflow='hidden';
+    el('auth').querySelector('.auth-card').focus(); Sound.play('page');
+  }
+  function closeAuth(){ if(el('auth').hidden) return; el('auth').hidden=true; if(el('player').hidden) document.body.style.overflow=''; try{ lastFocus?.focus(); }catch(e){} }
+  function resetMail(){ el('authMailBox').innerHTML=`<form id="authForm" novalidate><input id="authEmail" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com" aria-label="Email address">
+      <button class="abtn mail" type="submit">${el('authMailIcon').innerHTML}Continue with email</button></form>`;
+    el('authForm').addEventListener('submit', onEmail); }
+  async function onEmail(e){
+    e.preventDefault(); const email=el('authEmail').value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ authMsg('Enter a valid email address.', true); Sound.play('denied'); el('authEmail').focus(); return; }
+    if(!sb){ authMsg('Accounts aren’t connected on this preview yet. Your progress is saved on this device.', true); Sound.play('denied'); return; }
+    if(NATIVE && !CFG.siteUrl){ authMsg('Sign-in needs your site address in config.js (siteUrl).', true); return; }
+    const btn=el('authForm').querySelector('button'); btn.disabled=true; authMsg('Sending…');
+    const {error} = await sb.auth.signInWithOtp({email, options:{emailRedirectTo:redirect(), shouldCreateUser:true}});
+    btn.disabled=false;
+    if(error){ authMsg(/rate|seconds/i.test(error.message||'') ? 'Too many tries. Wait a minute, then try again.' : 'Couldn’t send the link. Check the address and try again.', true); Sound.play('denied'); return; }
+    authMsg(''); Sound.play('placed');
+    el('authMailBox').innerHTML=`<div class="auth-sent"><b>Check your email</b><p class="muted">We sent a sign-in link to <b style="color:var(--ink)">${esc(email)}</b>. Open it on this device to finish. It works for new and existing accounts.</p>
+      <button class="auth-link" type="button" id="authAgain" style="justify-self:start;padding:0">Use a different email</button></div>`;
+    el('authAgain').onclick=()=>{ resetMail(); el('authEmail').value=email; el('authEmail').focus(); };
+  }
+  async function onProvider(provider, btn){
+    if(!sb){ authMsg('Accounts aren’t connected on this preview yet. Your progress is saved on this device.', true); Sound.play('denied'); return; }
+    if(NATIVE && !CFG.siteUrl){ authMsg('Sign-in needs your site address in config.js (siteUrl).', true); return; }
+    btn.disabled=true; authMsg('Opening '+(provider==='apple'?'Apple':'Google')+'…');
+    const {data, error} = await sb.auth.signInWithOAuth({provider, options:{redirectTo:redirect(), skipBrowserRedirect:NATIVE}});
+    if(error){ btn.disabled=false; authMsg('Couldn’t start sign-in. Try again, or use email.', true); Sound.play('denied'); return; }
+    if(NATIVE && data?.url){ btn.disabled=false; authMsg(''); if(PLUG.Browser) PLUG.Browser.open({url:data.url, presentationStyle:'popover'}); else location.href=data.url; }
+  }
+  el('auth').querySelectorAll('[data-provider]').forEach(b=>b.addEventListener('click',()=>onProvider(b.dataset.provider, b)));
+  el('authMode').addEventListener('click',()=>{ setMode(authMode==='create'?'signin':'create'); });
+  el('authX').addEventListener('click',closeAuth); el('authSkip').addEventListener('click',closeAuth);
+  el('auth').addEventListener('click',e=>{ if(e.target===el('auth')) closeAuth(); });
+  addEventListener('keydown',e=>{ if(e.key==='Escape' && !el('auth').hidden){ e.stopPropagation(); closeAuth(); } }, true);
+  el('signInBtn').addEventListener('click',()=>openAuth('signin'));
+  el('acct').addEventListener('click',e=>{ const b=e.target.closest('[data-auth]'); if(b) openAuth(b.dataset.auth); });
+  // Use the name from Apple or Google if the learner hasn't picked one
+  function adoptName(){ const m=user?.user_metadata||{}, n=(m.full_name||m.name||'').trim();
+    if(n && !(Lr().name||'').trim()){ Lr().name=n.split(/\s+/)[0].slice(0,20); save(); renderMeChip(); if(tab==='profile') renderMe(true); } }
   // A sign-in link opened by the phone app arrives here as a universal link
-  async function handleUrl(u){ if(!sb) return; const code=u.searchParams.get('code'); if(code){ try{ await sb.auth.exchangeCodeForSession(code); }catch(e){} } }
-  return {init, render, loadFriends, handleUrl, get on(){ return on; }, get user(){ return user; }};
+  async function handleUrl(u){ if(!sb) return; const code=u.searchParams.get('code'); if(code){ try{ PLUG.Browser?.close(); }catch(e){} try{ await sb.auth.exchangeCodeForSession(code); }catch(e){ toast('That sign-in link has expired. Try again.'); } } }
+  return {init, render, loadFriends, handleUrl, open:openAuth, close:closeAuth, get on(){ return on; }, get user(){ return user; }};
 })();
 
 /* App shell: offline support, install prompt, native deep links and back button */

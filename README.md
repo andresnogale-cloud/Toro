@@ -50,6 +50,15 @@ Pure black, elegant and modern, in the style of a modern trading app. Gold is ke
 
 Each course has 4 units, and each unit has 3 lessons and a unit review. Each lesson opens with a short tip, then asks 5 questions. That's 300 questions across 60 lessons.
 
+### Final tests
+
+After the last unit review, each course ends with a **final test** built from real-world problems. It draws 10 of the course's 12 questions at random, so a retake is different each time.
+
+- **What would you do?** Situations you could face, such as a scam tip in a group chat, a port strike that stops your only supplier, or a stock that falls after it beats earnings.
+- **Work it out.** Calculations you type in yourself, such as profit on a trade, position size from your risk, credit utilization, customer acquisition cost, a reorder point or a tariff. Commas and `$` are fine, and each answer allows a small rounding margin.
+
+There are no hearts and no second tries, and the worked answer shows after every question. Score 8 or more to get **Certified**: 50 XP, $500 of practice cash and 30 credits the first time. The best score shows on the course and on Profile, and there are badges for your first certificate and for all five. Below 8, you can review and try again with new questions.
+
 ## How learning works
 
 - **Path.** Lessons unlock one at a time along a winding path. Each unit has a Guidebook with the key ideas.
@@ -61,7 +70,7 @@ Each course has 4 units, and each unit has 3 lessons and a unit review. Each les
 - **Gems.** Earned from lessons and quests. Spend them on heart refills and streak freezes.
 - **Daily goal and quests.** Pick 10, 20, 30 or 50 XP a day. Each day has three quests: reach your goal, finish 2 lessons, and make a practice trade.
 - **League.** A weekly table against simulated players. The top 3 move up a tier each Monday: Bronze, Silver, Gold, Sapphire, Ruby, Diamond.
-- **Badges.** 11 achievements, from First steps to Graduate.
+- **Badges.** 13 achievements, from First steps to Expert (certified in all five courses).
 - **Try it.** Some lessons end with a link to practice what you learned. The order-types lesson opens a stock, and the freight lesson opens Saltwater Shipping.
 
 ## Your personal stock (Profile)
@@ -156,7 +165,7 @@ The free IEX feed covers one exchange, so prices can differ slightly from the co
 
 ## Accounts, sync and friends
 
-Toro works fully without an account, saving everything on the device. With Supabase (the free tier is enough), learners can sign in with an email link, or with Google if you enable it. Their lessons, practice account and personal stock then sync across phone and web. They can also follow friends by a 6-character code and compare personal stocks in the **Friends market** on Profile.
+Toro works fully without an account, saving everything on the device. With Supabase (the free tier is enough), learners can create an account or sign in with **Apple**, **Google** or **email**. Email uses a secure sign-in link, so there's no password to remember. The sign-in screen opens from **Sign in** in the header, from Profile, and once after the first finished lesson. Their lessons, practice account and personal stock then sync across phone and web. They can also follow friends by a 6-character code and compare personal stocks in the **Friends market** on Profile.
 
 **Turn it on (about 10 minutes):**
 
@@ -164,9 +173,13 @@ Toro works fully without an account, saving everything on the device. With Supab
 2. In **SQL Editor**, run `supabase/schema.sql`. It creates the `profiles`, `app_state` and `follows` tables with row-level security.
 3. In **Authentication → URL Configuration**, set the Site URL to your Vercel address and add `https://your-domain/profile` to the redirect URLs.
 4. Copy **Project URL** and the **anon public** key from **Project Settings → API** into `config.js`.
-5. Optional: enable **Google** under **Authentication → Providers**, then set `google: true` in `config.js`.
+5. Email sign-in works right away. For production, add your own SMTP server under **Authentication → Emails**, because Supabase's built-in sender has a low hourly limit.
+6. **Google:** create an OAuth client (type *Web application*) in the [Google Cloud console](https://console.cloud.google.com/apis/credentials). Add `https://<project>.supabase.co/auth/v1/callback` as an authorized redirect URI. Paste the client ID and secret under **Authentication → Providers → Google**, then set `google: true` in `config.js`.
+7. **Apple** (needs the Apple Developer Program): in [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list), create a **Services ID** with Sign in with Apple turned on. Use your Supabase domain and the same callback URL as above, then create a **Sign in with Apple key**. Enter the Services ID, Team ID, Key ID and key under **Authentication → Providers → Apple**, then set `apple: true` in `config.js`. The App Store requires Sign in with Apple in any app that offers Google sign-in.
 
-The accounts panel stays hidden until `config.js` is filled in.
+Only providers set to `true` show on the sign-in screen, and email is always there. Until `config.js` has a Supabase URL and key, the screen still opens but explains that accounts aren't connected yet, and progress stays on the device.
+
+In the phone apps, Apple and Google open in an in-app browser (`@capacitor/browser`). Email links come back into the app through the universal link `https://your-domain/profile`, so `siteUrl` in `config.js` must be set.
 
 How the data is handled:
 
@@ -222,7 +235,7 @@ In Xcode, choose your team under **Signing & Capabilities** and press Run. In An
    - Replace `YOUR-DOMAIN` in `android/app/src/main/AndroidManifest.xml` and `ios/App/App/App.entitlements`.
    - In Xcode, add the **Associated Domains** capability.
    - Fill in your Team ID and signing fingerprint in `.well-known/`.
-4. **Store listing.** You need screenshots, a privacy policy URL and an age rating. Toro stores everything on the device and collects no personal data. In the finance category, the app stores will look for the "practice only, not financial advice" wording, which the app already shows.
+4. **Store listing.** You need screenshots, a privacy policy URL and an age rating. Without an account, Toro stores everything on the device. With accounts turned on, list the email address, name and learning progress you store in Supabase. In the finance category, the app stores will look for the "practice only, not financial advice" wording, which the app already shows.
 
 ## Deploy on Vercel
 

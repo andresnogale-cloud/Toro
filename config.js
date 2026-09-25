@@ -8,5 +8,6 @@ window.TORO_CONFIG = {
   siteUrl: '',
   supabaseUrl: '',      // e.g. 'https://abcdefgh.supabase.co'
   supabaseAnonKey: '',  // the "anon public" key
-  google: false         // true after enabling Google under Authentication > Providers
+  google: false,        // true after enabling Google under Authentication > Providers
+  apple: false          // true after enabling Apple under Authentication > Providers (needed for the App Store if Google is on)
 };

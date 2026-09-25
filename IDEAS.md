@@ -4,13 +4,15 @@ Toro teaches money, markets and business in bite-size lessons, then lets you pra
 
 ## Done
 
-- [x] 5 courses, 10 units, 30 lessons and 150 questions: Stocks & Investing, Trading, Personal Finance, Marketing & Business, Global Supply Chains
+- [x] 5 courses, 20 units, 60 lessons and 300 questions: Stocks & Investing, Trading, Personal Finance, Marketing & Business, Global Supply Chains
 - [x] 5 question types: multiple choice, true or false, fill in the blank, match the pairs, put in order
 - [x] Lesson path with locked and unlocked lessons, unit reviews and Guidebooks
 - [x] XP, daily goal, streaks with streak freezes, hearts, gems and a shop
 - [x] Daily quests, including one that asks for a practice trade
 - [x] Weekly league against simulated players, with promotion and demotion
-- [x] 11 badges
+- [x] 13 badges
+- [x] Accounts with Apple, Google or email sign-in, cloud sync and friends
+- [x] Final test for each course: real-world scenarios and calculations, with a Certified score
 - [x] "Try it" links from lessons into the simulator and calculators
 - [x] Trading simulator with market and limit orders, alerts, watchlist, portfolio and diversification score
 - [x] Deep links and universal-link config files
@@ -55,12 +57,11 @@ Toro teaches money, markets and business in bite-size lessons, then lets you pra
 - **Live TradingView charts.** TradingView's embeddable widgets could show real market charts once Toro is hosted on its own domain. The artifact preview blocks outside scripts and iframes.
 - **Personal stock leagues.** Compare your personal stock with friends' tickers, and share a card of your chart.
 
-- **Accounts and sync.** Sign in with Apple or Google so progress follows you between devices.
 - **Native apps.** Wrap the web app with Capacitor or rebuild in React Native. The `.well-known` files already cover universal links.
 - **AI tutor.** Explains a wrong answer in different words, answers follow-up questions, and makes new practice questions from your weak spots.
 - **Classroom and team mode.** Teachers and managers assign courses and see progress. A strong fit for schools, business programs and logistics companies training new staff.
 - **More markets.** Add stock search beyond the 16 built-in tickers, crypto and international exchanges, and news headlines per stock. Real market data is already built in (see README).
-- **Certificates.** A shareable certificate for finishing a course, starting with Global Supply Chains for career changers.
+- **Shareable certificates.** Turn a passed final test into a certificate image to share, starting with Global Supply Chains for career changers.
 
 ## Guardrails to keep
 
