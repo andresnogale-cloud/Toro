@@ -1,48 +1,70 @@
 # Toro ideas
 
-The ideas are grouped by how much work they take. The items marked done are already in `index.html`.
+Toro teaches money, markets and business in bite-size lessons, then lets you practice what you learned in a simulator. Ideas are grouped by effort.
 
-## Done in this version
+## Done
 
-- [x] Paper trading with $10,000 virtual cash and fractional shares
-- [x] Market and limit orders, with limit orders that fill automatically
-- [x] Price alerts
-- [x] Watchlist, sector filters and search
-- [x] Charts for 1D, 1W, 1M, 3M and 1Y with a hover crosshair
-- [x] Diversification score and sector allocation
-- [x] Dollar-cost averaging backtest and compound growth planner
-- [x] Question of the day and short lessons
-- [x] Deep links (`#LUMQ`, `/stock/LUMQ`) and universal-link config files
-- [x] Light and dark themes, phone layout with a bottom tab bar
+- [x] 5 courses, 10 units, 30 lessons and 150 questions: Stocks & Investing, Trading, Personal Finance, Marketing & Business, Global Supply Chains
+- [x] 5 question types: multiple choice, true or false, fill in the blank, match the pairs, put in order
+- [x] Lesson path with locked and unlocked lessons, unit reviews and Guidebooks
+- [x] XP, daily goal, streaks with streak freezes, hearts, gems and a shop
+- [x] Daily quests, including one that asks for a practice trade
+- [x] Weekly league against simulated players, with promotion and demotion
+- [x] 11 badges
+- [x] "Try it" links from lessons into the simulator and calculators
+- [x] Trading simulator with market and limit orders, alerts, watchlist, portfolio and diversification score
+- [x] Deep links and universal-link config files
+
+## More content (highest impact)
+
+- **More units per course.** Aim for 5–6 units each. Ideas:
+  - *Investing:* bonds, reading an earnings report, valuation basics, retirement accounts, taxes on gains
+  - *Trading:* volume, momentum vs. mean reversion, options basics (calls, puts, payoff diagrams), trading psychology
+  - *Personal Finance:* paychecks and taxes, insurance, renting vs. buying, student loans, side income
+  - *Marketing & Business:* branding, pricing strategy, social and content marketing, unit economics, pitching investors, reading a P&L
+  - *Global Supply Chains:* procurement and negotiation, warehousing and inventory math (EOQ, reorder point), last-mile delivery, sustainability and carbon, port congestion case studies, trade agreements
+- **New courses:**
+  - *Economics 101:* inflation, interest rates and central banks, GDP, recessions
+  - *Crypto basics:* blockchains, wallets, scams to avoid, clearly in learning mode
+  - *Entrepreneurship:* from idea to first customer, a lean canvas, fundraising
+  - *International Trade and Logistics Careers:* freight forwarding, customs brokerage, how to get certified
+- **Scenario lessons.** Short stories where you make decisions, for example "A typhoon closes a port. Reroute, air-freight, or wait?", with outcomes and costs.
+- **Supply chain simulator.** A companion to the trading simulator: run a small import business. Order stock from suppliers in different countries, choose ocean or air, pay tariffs, and survive random disruptions. Connect it to lessons the way trading is connected now.
 
 ## Quick wins (a day or less each)
 
-- **Portfolio value chart.** Save a daily snapshot of account value and chart it over time.
-- **Stop-loss orders.** Sell automatically if a stock falls below a set price.
-- **Recurring buys.** "Buy $50 of TXM every Monday" to practice DCA for real inside the app.
-- **Trade journal.** Ask "Why are you buying this?" on each trade, then show the note next to the result later.
-- **Share a trade card.** An image of "I bought LUMQ at $316" to post, with a deep link back to the stock.
-- **Haptic and sound cues** on order fills in the native app.
+- **Mistakes review.** A practice session built from questions you missed. Completing it earns a heart.
+- **Speaking the lesson aloud** with text-to-speech, for accessibility.
+- **Streak calendar** showing which days you practiced.
+- **Portfolio value chart** built from daily snapshots.
+- **Recurring buys** in the simulator ("$50 of SPY every Monday") to practice dollar-cost averaging.
+- **Share cards** for streaks, badges and trades, each linking back to Toro with a universal link.
+- **Sound effects and haptics** for right and wrong answers in the native app.
 
 ## Medium features (about a week each)
 
-- **Market events.** Simulated earnings reports and news headlines that move specific stocks, so players learn how news affects prices.
-- **Challenges and badges.** "Beat TXM this month", "Hold 5 sectors", "Place your first limit order". Track streaks alongside the daily quiz.
-- **Friends leagues.** Private leagues where friends start with the same cash and compete on return over a month. Invite links use universal links (`/league/<code>`).
-- **Risk profile quiz.** Five questions at sign-up that suggest a starting mix (for example 70% TXM and 30% picks) and explain why.
-- **Options basics.** A simplified calls-and-puts simulator with payoff diagrams, kept clearly in learning mode.
-- **Push notifications** for alerts and filled orders once there's a native app.
+- **Real friends leagues** with invite links (`/league/<code>`). Needs accounts.
+- **Placement test** so experienced learners can skip ahead.
+- **Timed challenge mode** that answers as many questions as possible in 60 seconds for bonus XP.
+- **Market events.** Simulated earnings reports and news headlines that move specific stocks, with a quick lesson on why.
+- **Push notifications** for streak reminders, alerts and filled orders.
 
 ## Bigger bets
 
-- **Real market data in delayed mode.** Plug in a market data API (15-minute delayed quotes are cheap) as a second mode beside the fictional market. This needs licensing review.
-- **Accounts and sync.** Sign in with Apple or Google so a portfolio follows you across phone and web.
+- **Real brokerage connection.** Let learners who finish a course open a real account through a licensed brokerage partner. Alpaca and DriveWealth offer broker APIs. This needs the partner's compliance review, KYC and regulatory approval before any real money moves. Until then, rewards stay virtual.
+- **Live TradingView charts.** TradingView's embeddable widgets could show real market charts once Toro is hosted on its own domain. The artifact preview blocks outside scripts and iframes.
+- **Personal stock leagues.** Compare your personal stock with friends' tickers, and share a card of your chart.
+
+- **Accounts and sync.** Sign in with Apple or Google so progress follows you between devices.
 - **Native apps.** Wrap the web app with Capacitor or rebuild in React Native. The `.well-known` files already cover universal links.
-- **AI coach.** Explain in plain language why the portfolio moved today, and flag concentration risk before a trade goes through.
-- **Classroom mode.** Teachers create a class league, assign lessons and see anonymized progress. A strong fit for schools and finance clubs.
+- **AI tutor.** Explains a wrong answer in different words, answers follow-up questions, and makes new practice questions from your weak spots.
+- **Classroom and team mode.** Teachers and managers assign courses and see progress. A strong fit for schools, business programs and logistics companies training new staff.
+- **More markets.** Add stock search beyond the 16 built-in tickers, crypto and international exchanges, and news headlines per stock. Real market data is already built in (see README).
+- **Certificates.** A shareable certificate for finishing a course, starting with Global Supply Chains for career changers.
 
 ## Guardrails to keep
 
-- Always label simulated prices and fictional companies.
-- Never present anything as investment advice.
+- Always label demo prices and simulated league players, and show the market-data source.
+- Never present anything as financial advice.
+- Keep lesson facts reviewed by someone with domain expertise before scaling content.
 - If real data or real money is ever added, get legal and compliance review first.
