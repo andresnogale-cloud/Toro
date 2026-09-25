@@ -6,8 +6,9 @@ Open `index.html` in a browser to run it. There is no build step. Lesson content
 
 ## Design
 
-Pure black, in the style of a modern trading app. Gold is kept for the Toro brand, XP and achievements. The emblem from `assets/toro-logo.png` is redrawn as a vector (`EMBLEM_D` in `index.html`) so it stays sharp and can animate.
+Pure black, elegant and modern, in the style of a modern trading app. Gold is kept for the Toro brand, progress and achievements. The header and opening screen use the real logo and TORO wordmark (`assets/toro-full.png`, `assets/toro-emb.png`, `assets/toro-word.png`). These are cut from the original `assets/toro-logo.png` with the white background removed. The emblem is also redrawn as a vector (`EMBLEM_D` in `index.html`) for the animated lesson-complete screen.
 
+- **Learn:** a curriculum list rather than a game map. It has an "Up next" card, lesson rows with diamond markers taken from the logo's lattice, thin-line icons, a serif for headings, and restrained feedback with no confetti.
 - **Market color:** like Robinhood, the accent turns green when the number on screen is up and orange-red when it's down, including while you drag across a chart.
 - **Trade screen:**
   - A scrolling ticker tape of live prices.

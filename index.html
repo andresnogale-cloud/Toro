@@ -4,7 +4,7 @@
 <meta name="description" content="Toro teaches investing, trading, personal finance, marketing and global supply chains in bite-size lessons, then lets you practice with $10,000 of virtual cash.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Figtree:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Figtree:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <style>
 /* Toro: pure black trading-app look. Gold is reserved for the brand, XP and achievements.
    --accent flips between green and orange-red with the market, like a trading app. */
@@ -62,7 +62,7 @@ svg.i{width:20px;height:20px;display:block;flex:none}
 .splash-in{display:grid;justify-items:center;gap:22px;padding:24px}
 .splash .emblem{width:min(56vw,260px);height:auto;filter:drop-shadow(0 0 28px rgba(216,179,90,.35))}
 .splash .wordmark{font-family:var(--brand);font-weight:700;font-size:clamp(40px,11vw,72px);letter-spacing:.34em;margin-right:-.34em;opacity:0;transform:translateY(12px);animation:wordIn 1s var(--ease) 1.05s forwards}
-.splash .tag{font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:var(--muted);opacity:0;animation:tagIn .9s var(--ease) 1.5s forwards;text-align:center}
+.splash .tagline{font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:var(--muted);opacity:0;animation:tagIn .9s var(--ease) 1.5s forwards;text-align:center}
 @keyframes wordIn{to{opacity:1;transform:none;letter-spacing:.18em}}
 @keyframes tagIn{to{opacity:1}}
 
@@ -469,7 +469,7 @@ tr:last-child td{border-bottom:0}
   .courses{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;margin-inline:-16px;padding-inline:16px;scrollbar-width:none}
   nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;border-top:1px solid var(--line);background:rgba(0,0,0,.97);justify-content:space-around;padding:6px 4px calc(env(safe-area-inset-bottom,0px) + 6px)}
   nav.tabs button{flex-direction:column;gap:3px;font-size:10.5px;padding:6px 8px}
-  nav.tabs button[aria-selected="true"]{color:var(--accent)}
+  nav.tabs button[aria-selected="true"]{color:#fff}
   nav.tabs .ind{top:0;bottom:auto}
   .meter{padding:5px 6px;font-size:13px}
   .side{grid-template-columns:1fr}
@@ -492,10 +492,145 @@ tr:last-child td{border-bottom:0}
   .hrow canvas{width:60px}
 }
 @media (max-width:380px){ .meter span{display:none} }
+nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
+/* ---------- Refined layer: elegant and modern, fewer game-like cues ---------- */
+:root{--serif:"Cormorant Garamond","Cormorant",Georgia,"Times New Roman",serif}
+.brand{gap:12px}
+.brand-mark{width:40px;height:auto;display:block}
+.brand-word{height:15px;width:auto;display:block}
+.splash-logo{position:relative;width:min(62vw,320px);animation:logoIn 1.6s var(--ease) both}
+.splash-logo img{width:100%;height:auto;display:block;filter:drop-shadow(0 0 34px rgba(216,179,90,.22))}
+.splash-logo::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 42%,rgba(255,250,230,.85) 50%,transparent 58%);background-size:260% 100%;background-position:160% 0;
+  -webkit-mask:url(assets/toro-full.png) center/contain no-repeat;mask:url(assets/toro-full.png) center/contain no-repeat;animation:sweep 1.5s ease-in-out .9s both;mix-blend-mode:screen}
+@keyframes logoIn{from{opacity:0;transform:scale(.95);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+@keyframes sweep{from{background-position:160% 0}to{background-position:-60% 0}}
+.splash .tagline{animation-delay:1.3s}
+.meter{color:var(--ink-2)!important;font-weight:600;gap:6px}
+.meter svg{width:17px;height:17px;filter:none!important;animation:none!important}
+.meter.flame:not(.off){color:var(--gold)!important}
+.meter.off{color:var(--faint)!important}
+.meter.pop{animation:none}
+
+/* Learn: curriculum */
+.courses{display:flex;flex-wrap:nowrap;gap:28px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.course{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:baseline;gap:8px;padding:12px 0;border-bottom:2px solid transparent;margin-bottom:-1px;color:var(--muted);font-weight:600;font-size:14.5px;white-space:nowrap;transition:color .2s,border-color .35s}
+.course:hover{color:var(--ink)}
+.course small{font-size:12px;color:var(--faint);font-weight:600}
+.course[aria-pressed="true"]{color:var(--ink);border-color:var(--gold)}
+.course:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.course-head{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:28px;align-items:end;margin:36px 0 22px}
+.course-head h1{font-family:var(--serif);font-weight:600;font-size:clamp(40px,5.2vw,60px);letter-spacing:-.005em;line-height:1;margin:10px 0 12px}
+.course-head p{margin:0;max-width:52ch;font-size:15.5px}
+.cp{display:grid;gap:10px}
+.cp-num{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:13px}
+.cp-num b{font-size:24px;font-weight:600}
+.cp .bar{height:2px;background:#1A1A1F}
+.cp .bar span{background:var(--gold)}
+.resume{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:28px 30px;border-radius:20px;border:1px solid rgba(216,179,90,.26);
+  background:linear-gradient(115deg,rgba(216,179,90,.09),rgba(216,179,90,0) 55%),#070708}
+.resume::after{content:"";position:absolute;right:-20px;top:50%;width:280px;height:200px;transform:translateY(-50%);background:url(assets/toro-emb.png) center/contain no-repeat;opacity:.08;pointer-events:none}
+.rs-text{position:relative;z-index:1}
+.resume h2{font-family:var(--serif);font-weight:600;font-size:32px;letter-spacing:0;margin:8px 0 6px}
+.resume p{margin:0}
+.btn.cta{position:relative;z-index:1;display:inline-flex;align-items:center;gap:10px;background:#fff;color:#000;border:0;border-radius:99px;padding:13px 24px;font-weight:700;letter-spacing:.01em}
+.btn.cta:hover{background:var(--gold-hi)}
+.btn.cta span{transition:transform .25s var(--ease)}
+.btn.cta:hover span{transform:translateX(4px)}
+.unit{display:block;margin-top:38px}
+.unit-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.unit-head h2{font-size:20px;margin-top:6px;letter-spacing:-.01em;font-weight:600}
+.btn.sm{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;font-size:13px;font-weight:600}
+.btn.sm svg{width:16px;height:16px}
+.steps{list-style:none;margin:6px 0 0;padding:0;position:relative}
+.steps::before{content:"";position:absolute;left:27.5px;top:30px;bottom:30px;width:1px;background:linear-gradient(var(--line-2),var(--line-2))}
+.step{animation:stepIn .55s var(--ease) backwards;animation-delay:calc(var(--i) * 40ms)}
+@keyframes stepIn{from{opacity:0;transform:translateY(6px)}}
+.step button{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:6px;padding:15px 14px 15px 0;border-radius:14px;transition:background .25s}
+.step button:hover{background:#0A0A0C}
+.step button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.step.current button{background:#0A0A0C}
+.step.locked button{cursor:not-allowed}
+.mark{position:relative;justify-self:center;width:16px;height:16px;transform:rotate(45deg);border:1.5px solid #34343B;background:#000;border-radius:2px;display:grid;place-items:center;transition:all .35s}
+.mark svg{transform:rotate(-45deg);width:11px;height:11px;color:#1A1204}
+.step.done .mark{background:var(--gold);border-color:var(--gold)}
+.step.current .mark{border-color:var(--gold);box-shadow:0 0 0 6px rgba(216,179,90,.1),0 0 20px rgba(216,179,90,.35);animation:breathe 3s ease-in-out infinite}
+.step.current .mark::after{content:"";position:absolute;inset:3.5px;background:var(--gold);border-radius:1px}
+@keyframes breathe{50%{box-shadow:0 0 0 9px rgba(216,179,90,.05),0 0 26px rgba(216,179,90,.45)}}
+.st-body{display:grid;gap:3px;min-width:0}
+.st-title{font-weight:600;font-size:16px;color:var(--ink)}
+.st-meta{font-size:12.5px;color:var(--muted)}
+.step.locked .st-title{color:#6A6A72}
+.step.locked .st-meta{color:var(--faint)}
+.st-act{font-size:13px;font-weight:600;color:var(--muted);padding:7px 14px;border-radius:99px;border:1px solid transparent}
+.st-act svg{width:16px;height:16px;color:var(--faint)}
+.st-act.go{color:var(--ink);border-color:var(--line-2)}
+.step.current .st-act.go{background:#fff;color:#000;border-color:#fff}
+.step button:hover .st-act.go{border-color:#fff}
+.side .card{background:#070708}
+.side h3{font-weight:600}
+.ring>span{width:58px;height:58px;background:#070708}
+.quest svg{width:20px;height:20px}
+.avatar{background:#141417;color:var(--ink-2);font-weight:600;box-shadow:inset 0 0 0 1px var(--line-2)}
+.league li.me{background:transparent;box-shadow:inset 0 0 0 1px rgba(216,179,90,.35);font-weight:700}
+.league li.me .avatar{background:var(--gold);color:#000;box-shadow:none}
+
+/* Lesson player */
+.player{background:radial-gradient(70vmax 40vmax at 50% -25%,rgba(216,179,90,.07),transparent 60%),#000}
+.p-top .bar{height:3px;background:#1A1A1F;box-shadow:none}
+.p-top .bar span{background:var(--gold);box-shadow:0 0 12px rgba(216,179,90,.5);animation:none}
+.p-kind{color:var(--gold);font-weight:700}
+.p-in h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4.6vw,40px);letter-spacing:0;line-height:1.15}
+.keyidea{border-left:1px solid var(--gold);padding:4px 0 4px 24px;display:grid;gap:12px}
+.keyidea p{margin:0;font-size:19px;line-height:1.75;color:var(--ink-2);max-width:60ch}
+.opt{border-radius:12px;font-weight:500;background:#070708;padding:17px 18px}
+.opt:hover:not(:disabled){transform:none;border-color:#4A4A52}
+.opt[aria-pressed="true"]{border-color:var(--gold);background:rgba(216,179,90,.06)}
+.opt[aria-pressed="true"] kbd{border-color:var(--gold);color:var(--gold)}
+.tf .opt{font-weight:600}
+.word{font-weight:500;border-radius:10px;background:#070708}
+.word:hover:not(:disabled){transform:none;border-color:#4A4A52}
+.word[aria-pressed="true"]{border-color:var(--gold);background:rgba(216,179,90,.06);color:var(--ink)}
+.answer-line .word::before{color:var(--gold)}
+.sentence{font-weight:500;font-size:22px}
+.blank{border-bottom-color:var(--gold);color:var(--gold-hi)}
+.btn.chunky{background:#fff;color:#000;box-shadow:none;border-radius:99px;letter-spacing:.02em;font-weight:700;padding:15px 30px}
+.btn.chunky:hover{background:var(--gold-hi)}
+.btn.chunky::after{display:none}
+.btn.chunky:disabled{background:#141417;color:var(--faint)}
+.p-foot.ok{background:linear-gradient(0deg,rgba(0,200,5,.06),transparent);border-top:1px solid rgba(0,200,5,.5)}
+.p-foot.bad{background:linear-gradient(0deg,rgba(255,80,0,.06),transparent);border-top:1px solid rgba(255,80,0,.5)}
+.fb h3{font-family:var(--serif);font-weight:600;font-size:28px;letter-spacing:0}
+.end{gap:16px;padding-top:6vh}
+.end .mascot{width:130px;filter:drop-shadow(0 0 24px rgba(216,179,90,.3))}
+.end h2{font-family:var(--serif);font-weight:600;font-size:clamp(38px,6vw,56px);letter-spacing:0;margin-bottom:8px}
+.stats3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line);width:min(480px,100%)}
+.stats3>div{display:grid;gap:6px;padding:18px 8px;animation:stepIn .6s var(--ease) backwards}
+.stats3>div:nth-child(2){animation-delay:.1s} .stats3>div:nth-child(3){animation-delay:.2s}
+.stats3>div+div{border-left:1px solid var(--line)}
+.stats3 b{font-size:30px;font-weight:600;font-variant-numeric:tabular-nums}
+.end-note{display:flex;gap:8px;align-items:center;justify-content:center;margin:4px 0 0;font-size:14px}
+.end-note svg{width:16px;height:16px;color:var(--gold)}
+.end-note span+svg{margin-left:16px}
+
+/* Profile */
+.pstat>span,.shop-item>span{color:var(--gold)!important}
+.badge{background:#070708}
+.badge .medal{background:transparent!important;border:1px solid rgba(216,179,90,.55);color:var(--gold);box-shadow:none;width:52px;height:52px}
+.badge .medal svg{width:24px;height:24px}
+.badge.locked .medal{border-color:var(--line-2);color:#3A3A42}
+.cprog .ci{background:transparent;border:1px solid var(--line-2);color:var(--gold)}
+@media (max-width:760px){
+  .course-head{grid-template-columns:1fr;gap:16px;margin-top:26px}
+  .resume{padding:22px 20px}
+  .resume h2{font-size:27px}
+  .btn.cta{width:100%;justify-content:center}
+  .courses{margin-inline:-16px;padding-inline:16px;gap:22px}
+  .brand-word{height:13px}
+}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .emblem.draw path{stroke-dashoffset:0}
-  .splash .wordmark,.splash .tag{opacity:1;transform:none}
+  .splash .wordmark,.splash .tagline{opacity:1;transform:none}
 }
 </style>
 
@@ -518,11 +653,11 @@ tr:last-child td{border-bottom:0}
   </defs>
 </svg>
 <div class="splash" id="splash">
-  <div class="splash-in"><div id="splashMark"></div><div class="wordmark gold-text">TORO</div><div class="tag">Learn money · Master markets</div></div>
+  <div class="splash-in"><div class="splash-logo"><img src="assets/toro-full.png" alt="Toro" width="320" height="276"></div><div class="tagline">Learn money · Master markets</div></div>
 </div>
 <header class="top">
   <div class="top-in">
-    <a class="brand" href="#learn" aria-label="Toro home"><span id="brandMark"></span><span class="wordmark gold-text">TORO</span></a>
+    <a class="brand" href="#learn" aria-label="Toro home"><img class="brand-mark" src="assets/toro-emb.png" alt="" width="40" height="28"><img class="brand-word" src="assets/toro-word.png" alt="Toro" width="84" height="15"></a>
     <span class="spacer"></span>
     <nav class="tabs" role="tablist" aria-label="Sections">
       <span class="ind" id="navInd" aria-hidden="true"></span>
@@ -709,9 +844,9 @@ const COURSE = Object.fromEntries(COURSES.map(c=>[c.id,c]));
 
 /* ---------- Icons ---------- */
 const I = {
-  flame:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3.5 5.5 6 5.5 11a5.5 5.5 0 0 1-11 0c0-2.3 1-4 2.3-5.3.2 1.6 1 2.8 2.2 3.3C10.5 7.7 11 4.6 12 2z"/></svg>',
-  gem:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M7 3h10l4 6-9 12L3 9z" opacity=".9"/><path d="M3 9h18M12 21 8.5 9 12 3l3.5 6z" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/></svg>',
-  heart:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-8-5.2-8-11.2A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 2.8C20 15.8 12 21 12 21z"/></svg>',
+  flame:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 2.8c1 3.4 5.4 5.9 5.4 10.8a5.4 5.4 0 0 1-10.8 0c0-2.2 1-3.9 2.2-5.2.3 1.6 1 2.7 2.2 3.2C10.6 8.3 11 5.3 12 2.8z"/></svg>',
+  gem:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3l9 9-9 9-9-9z"/><path d="M12 8.5l3.5 3.5-3.5 3.5-3.5-3.5z"/></svg>',
+  heart:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 20s-7.5-4.9-7.5-10.4A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.4C19.5 15.1 12 20 12 20z"/></svg>',
   check:'<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
   lock:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="10.5" width="14" height="10.5" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>',
   star:'<svg class="i" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z"/></svg>',
@@ -875,7 +1010,7 @@ const QUESTS = [
 ];
 function checkQuests(){
   const d=day();
-  for(const q of QUESTS){ if(!d.claimed.includes(q.id) && q.cur(d)>=q.max()){ d.claimed.push(q.id); Lr().gems+=10; toast(`Quest complete: ${q.t()} · +10 gems`, I.gem); } }
+  for(const q of QUESTS){ if(!d.claimed.includes(q.id) && q.cur(d)>=q.max()){ d.claimed.push(q.id); Lr().gems+=10; toast(`Quest complete: ${q.t()} · +10 credits`, I.gem); } }
   save();
 }
 
@@ -924,43 +1059,42 @@ function renderMeters(){
   const st=streakNow(), h=Lr().hearts;
   const html = `
     <button class="meter flame ${Lr().streak.last===TODAY?'':'off'}" type="button" data-go="profile" title="${st}-day streak${Lr().streak.last===TODAY?'':' · finish a lesson today to extend it'}">${I.flame}<span>${st}</span></button>
-    <button class="meter gem" type="button" data-go="profile" title="${Lr().gems} gems">${I.gem}<span>${Lr().gems}</span></button>
+    <button class="meter gem" type="button" data-go="profile" title="${Lr().gems} credits">${I.gem}<span>${Lr().gems}</span></button>
     <button class="meter heart ${h?'':'off'}" type="button" data-go="profile" title="${h} hearts${h<MAX_HEARTS?` · next in ${nextHeartMins()} min`:''}">${I.heart}<span>${h}</span></button>`;
   if(html!==renderMeters.last){
-    const prev=renderMeters.vals||[st,Lr().gems,h]; el('meters').innerHTML=html; renderMeters.last=html;
-    [st,Lr().gems,h].forEach((v,i)=>{ if(v>prev[i]) el('meters').children[i].classList.add('pop'); });
-    renderMeters.vals=[st,Lr().gems,h];
+    el('meters').innerHTML=html; renderMeters.last=html;
   }
 }
 el('meters').addEventListener('click',e=>{ const b=e.target.closest('[data-go]'); if(b) showTab(b.dataset.go); });
 
 /* ---------- Learn view ---------- */
-const OFFS=[0,58,88,58,0,-58,-88,-58];
 function renderLearn(){
   const cur=Lr().course;
   el('courses').innerHTML = COURSES.map(c=>{ const p=courseProgress(c.id);
-    return `<button class="course" type="button" data-course="${c.id}" aria-pressed="${c.id===cur}" style="--c:${c.color}">
-      <span class="ci">${COURSE_ICON[c.id]}</span><span><b>${esc(c.name)}</b><small>${p.pct}%</small></span></button>`; }).join('');
-  const c=COURSE[cur], nodes=nodesOf(cur);
+    return `<button class="course" type="button" data-course="${c.id}" aria-pressed="${c.id===cur}"><span>${esc(c.name)}</span><small>${p.pct}%</small></button>`; }).join('');
+  const c=COURSE[cur], nodes=nodesOf(cur), prog=courseProgress(cur);
   const firstOpen = nodes.findIndex(n=>!Lr().done[n.key]);
-  let html = `<div class="course-head"><span class="eyebrow">Course · ${courseProgress(cur).done} of ${nodes.length} complete</span><h1>${esc(c.name)}</h1><p class="muted" style="margin:0">${esc(c.blurb)}</p></div>`;
+  let html = `<header class="course-head"><div class="ch-text"><span class="eyebrow">Course</span><h1>${esc(c.name)}</h1><p class="muted">${esc(c.blurb)}</p></div>
+    <div class="cp"><div class="cp-num"><b>${prog.pct}%</b><span class="muted">${prog.done} of ${prog.total} complete</span></div><div class="bar"><span style="width:${prog.pct}%"></span></div></div></header>`;
+  if(firstOpen>=0){ const n=nodes[firstOpen], t=n.l==='r'?`Unit ${n.u+1} review`:c.units[n.u].lessons[n.l].t;
+    html += `<div class="resume"><div class="rs-text"><span class="eyebrow">${firstOpen===0?'Begin':'Up next'} · Unit ${n.u+1}</span><h2>${esc(t)}</h2>
+      <p class="muted">${n.l==='r'?'Eight mixed questions from this unit.':'A short reading, then five questions.'}</p></div>
+      <button class="btn cta" type="button" data-node="${firstOpen}">${firstOpen===0?'Start course':'Continue'}<span aria-hidden="true">→</span></button></div>`; }
+  else html += `<div class="resume"><div class="rs-text"><span class="eyebrow">Complete</span><h2>You finished ${esc(c.name)}</h2><p class="muted">Replay any lesson for practice, or choose another course.</p></div></div>`;
   let idx=0;
   c.units.forEach((u,ui)=>{
-    html += `<div class="unit" style="--c:${c.color}"><div class="unit-banner"><div style="flex:1;min-width:0"><div class="eyebrow">Unit ${ui+1}</div><h2>${esc(u.t)}</h2></div>
-      <button class="btn" type="button" data-guide="${ui}">${I.book}Guidebook</button></div><div class="path">`;
-    const count=u.lessons.length+1;
-    for(let k=0;k<count;k++,idx++){
-      const n=nodes[idx], done=!!Lr().done[n.key], open=isUnlocked(cur,idx), current=idx===firstOpen;
-      const isReview=n.l==='r'; const title=isReview?`Unit ${ui+1} review`:u.lessons[n.l].t;
-      const icon = done ? I.check : !open ? I.lock : isReview ? I.trophy : I.star;
-      html += `<div class="node-wrap" style="--x:${OFFS[idx%OFFS.length]};--i:${idx}">
-        ${current?`<span class="bubble">${Object.keys(Lr().done).some(k=>k.startsWith(cur+'.'))?'START':'START HERE'}</span>`:''}
-        <button class="node ${done?'done':''} ${open?'':'locked'} ${current?'current':''}" type="button" data-node="${idx}" aria-label="${esc(title)}${done?' (complete)':open?'':' (locked)'}">${icon}</button>
-        <div class="node-label">${esc(title)}</div></div>`;
+    html += `<section class="unit"><div class="unit-head"><div><span class="eyebrow">Unit ${ui+1}</span><h2>${esc(u.t)}</h2></div>
+      <button class="btn ghost sm" type="button" data-guide="${ui}">${I.book}Guidebook</button></div><ol class="steps">`;
+    for(let k=0;k<u.lessons.length+1;k++,idx++){
+      const n=nodes[idx], done=!!Lr().done[n.key], open=isUnlocked(cur,idx), current=idx===firstOpen, isReview=n.l==='r';
+      const title=isReview?'Unit review':u.lessons[n.l].t;
+      const meta=isReview?'Review · 8 questions · 20 XP':`Lesson ${k+1} · 5 questions · 10 XP`;
+      const act = done ? '<span class="st-act">Review</span>' : open ? '<span class="st-act go">Start</span>' : `<span class="st-act">${I.lock}</span>`;
+      html += `<li class="step ${done?'done':''} ${current?'current':''} ${open?'':'locked'}" style="--i:${idx}"><button type="button" data-node="${idx}" aria-label="${esc(title)}${done?' (complete)':open?'':' (locked)'}">
+        <span class="mark">${done?I.check:''}</span><span class="st-body"><span class="st-title">${esc(title)}</span><span class="st-meta">${meta}</span></span>${act}</button></li>`;
     }
-    html += `</div></div>`;
+    html += `</ol></section>`;
   });
-  if(firstOpen===-1) html += `<div class="card" style="margin-top:24px;display:flex;gap:16px;align-items:center">${emblem('mascot','width:70px')}<div><h2>Course complete</h2><p class="muted" style="margin:4px 0 0">Replay any lesson for practice XP, or start another course above.</p></div></div>`;
   el('pathWrap').innerHTML = html;
   renderSide();
 }
@@ -978,15 +1112,15 @@ function renderSide(){
   el('goalCard').innerHTML = `<div class="goal"><div class="ring" style="background:conic-gradient(var(--gold) ${p*360}deg,#1A1A1F 0)"><span>${Math.round(p*100)}%</span></div>
     <div><h3>Daily goal</h3><div class="muted" style="font-size:14px"><span class="num">${d.xp}/${g}</span> XP today${p>=1?' · done':''}</div>
     <div class="muted" style="font-size:13px">${streakNow()?`${streakNow()}-day streak${Lr().streak.last===TODAY?'':'. Finish a lesson to keep it'}`:'Finish a lesson to start a streak'}</div></div></div>`;
-  el('questCard').innerHTML = `<h3>Daily quests</h3>` + QUESTS.map(q=>{ const cur=Math.min(q.cur(d),q.max()), done=d.claimed.includes(q.id);
+  el('questCard').innerHTML = `<h3>Today</h3>` + QUESTS.map(q=>{ const cur=Math.min(q.cur(d),q.max()), done=d.claimed.includes(q.id);
     return `<div class="quest"><span style="color:${done?'var(--up)':'var(--gold)'}">${done?I.check:I[q.icon]}</span>
       <div class="qt"><span>${q.t()}</span><small>${cur}/${q.max()}</small></div>
       <div class="bar" style="--c:${done?'var(--up)':'var(--gold)'}"><span style="width:${cur/q.max()*100}%"></span></div></div>`; }).join('')
-    + `<p class="muted" style="font-size:12px;margin:6px 0 0">Each quest pays 10 gems. New quests every day.</p>`;
+    + `<p class="muted" style="font-size:12px;margin:8px 0 0">Each goal pays 10 credits.</p>`;
   const table=leagueTable(Lr().week, weekFrac()); const myRank=table.findIndex(r=>r.me)+1;
   const daysLeft = 7-((today.getDay()+6)%7);
-  el('leagueCard').innerHTML = `<div class="row" style="justify-content:space-between"><h3 style="display:flex;gap:6px;align-items:center"><span style="color:${TIER_COLORS[Lr().tier]}">${I.shield}</span>${TIERS[Lr().tier]} league</h3><span class="muted" style="font-size:12px">${daysLeft} day${daysLeft>1?'s':''} left</span></div>
-    <ol>${table.map((r,i)=>(Math.abs(i+1-myRank)<=2||i<3)?`<li class="${r.me?'me':''} ${i<3?'promo':i>=8?'demo':''}"><span class="rank">${i+1}</span><span class="avatar" style="background:${r.color}">${r.n[0]}</span><span>${esc(r.n)}</span><span class="num">${r.xp} XP</span></li>`:'').join('')}</ol>
+  el('leagueCard').innerHTML = `<div class="row" style="justify-content:space-between"><h3>${TIERS[Lr().tier]} league</h3><span class="muted" style="font-size:12px">${daysLeft} day${daysLeft>1?'s':''} left</span></div>
+    <ol>${table.map((r,i)=>(Math.abs(i+1-myRank)<=2||i<3)?`<li class="${r.me?'me':''} ${i<3?'promo':i>=8?'demo':''}"><span class="rank">${i+1}</span><span class="avatar">${r.n[0]}</span><span>${esc(r.n)}</span><span class="num">${r.xp} XP</span></li>`:'').join('')}</ol>
     <p class="muted" style="font-size:12px;margin:6px 0 0">Top 3 move up each Monday. Other players are simulated.</p>`;
 }
 
@@ -1037,7 +1171,7 @@ function renderPlayer(){
   let body='', foot='';
   if(P.phase==='tip'){
     body = `<div class="p-in"><div class="p-kind">${esc(c.name)} · Unit ${P.u+1}</div><h2>${esc(P.title)}</h2>
-      <div class="tipcard">${MASCOT}<div class="speech">${esc(P.lesson.tip)}</div></div></div>`;
+      <div class="keyidea"><span class="eyebrow">Key idea</span><p>${esc(P.lesson.tip)}</p></div></div>`;
     foot = `<div class="p-foot"><div class="p-foot-in"><span class="muted" style="font-size:14px;flex:1">${P.total} questions · ${P.replay?'5':'10+'} XP</span><button class="btn chunky gold" type="button" id="pGo">Start lesson</button></div></div>`;
   } else if(P.phase==='q'){
     const q=P.queue[0], p=prep(q);
@@ -1047,11 +1181,11 @@ function renderPlayer(){
     body = renderEnd(); foot = `<div class="p-foot"><div class="p-foot-in">${P.apply?`<a class="btn" href="${P.apply.href}" id="pApply">${esc(P.apply.label)}</a>`:''}<button class="btn chunky gold" type="button" id="pDone">Continue</button></div></div>`;
   } else if(P.phase==='nohearts'){
     const can=Lr().gems>=30;
-    body = `<div class="p-in end">${MASCOT}<h2 style="color:var(--heart)">Out of hearts</h2><p class="muted" style="margin:0;max-width:420px">Hearts refill one every 20 minutes. Your next heart arrives in ${nextHeartMins()} min. You can also refill all 5 for 30 gems.</p></div>`;
-    foot = `<div class="p-foot"><div class="p-foot-in"><button class="btn" type="button" id="pDone">Back to path</button><button class="btn chunky" type="button" id="pRefill" ${can?'':'disabled'}>Refill for 30 gems</button></div></div>`;
+    body = `<div class="p-in end">${emblem('mascot')}<h2>Out of hearts</h2><p class="muted" style="margin:0;max-width:420px">Hearts refill one every 20 minutes. Your next heart arrives in ${nextHeartMins()} min. You can also refill all 5 for 30 credits.</p></div>`;
+    foot = `<div class="p-foot"><div class="p-foot-in"><button class="btn" type="button" id="pDone">Back to path</button><button class="btn chunky" type="button" id="pRefill" ${can?'':'disabled'}>Refill for 30 credits</button></div></div>`;
   }
-  if(P.quit) foot = `<div class="p-foot bad"><div class="p-foot-in"><div class="fb"><h3>Quit this lesson?</h3><p>You’ll lose your progress in this lesson.</p></div>
-    <button class="btn" type="button" id="pQuitNo">Keep learning</button><button class="btn chunky bad" type="button" id="pQuitYes">Quit</button></div></div>`;
+  if(P.quit) foot = `<div class="p-foot bad"><div class="p-foot-in"><div class="fb"><h3>Leave this lesson?</h3><p>You’ll lose your progress in this lesson.</p></div>
+    <button class="btn" type="button" id="pQuitNo">Keep learning</button><button class="btn chunky bad" type="button" id="pQuitYes">Leave</button></div></div>`;
   pl.innerHTML = top + `<div class="p-body">${body}</div>` + foot;
   wirePlayer();
 }
@@ -1086,8 +1220,8 @@ function renderFoot(q){
     if(q.t==='match') return `<div class="p-foot"><div class="p-foot-in"><span class="muted" style="font-size:14px;flex:1">Tap a term, then its meaning.</span></div></div>`;
     return `<div class="p-foot"><div class="p-foot-in"><span class="spacer"></span><button class="btn chunky" type="button" id="pCheck" ${ready(q)?'':'disabled'}>Check</button></div></div>`;
   }
-  const praise=['Nice!','Correct!','Great job!','You got it!','Excellent!'][P.correct%5];
-  return `<div class="p-foot ${P.ok?'ok':'bad'}"><div class="p-foot-in"><div class="fb"><h3>${P.ok?praise:'Not quite'}</h3>
+  const praise='Correct';
+  return `<div class="p-foot ${P.ok?'ok':'bad'}"><div class="p-foot-in"><div class="fb"><h3>${P.ok?praise:'Incorrect'}</h3>
     ${!P.ok&&answerText(q)?`<p><b>Correct answer:</b> ${esc(answerText(q))}</p>`:''}${q.why?`<p>${esc(q.why)}</p>`:''}</div>
     <button class="btn chunky ${P.ok?'ok':'bad'}" type="button" id="pNext">Continue</button></div></div>`;
 }
@@ -1113,7 +1247,7 @@ function wirePlayer(){
     if(b.dataset.ml!=null) p.selL = p.selL===+b.dataset.ml ? null : +b.dataset.ml; else p.selR = p.selR===+b.dataset.mr ? null : +b.dataset.mr;
     if(p.selL!=null && p.selR!=null){
       if(p.selL===p.selR){ p.done.push(p.selL); p.selL=p.selR=null;
-        if(p.done.length===q.pairs.length){ P.checked=true; P.ok=true; P.correct++; } renderPlayer(); if(P.checked) fx.at(el('pNext'),30,.8); }
+        if(p.done.length===q.pairs.length){ P.checked=true; P.ok=true; P.correct++; } renderPlayer(); }
       else { const a=p.selL, r=p.selR; p.selL=p.selR=null; p.miss++; renderPlayer();
         pl.querySelector(`[data-ml="${a}"]`)?.classList.add('miss'); pl.querySelector(`[data-mr="${r}"]`)?.classList.add('miss'); }
     } else renderPlayer();
@@ -1129,7 +1263,6 @@ function check(){
   if(P.ok) P.correct++;
   else { P.mistakes++; loseHeart(); P.queue.push({...q, prep:null}); }
   renderPlayer(); renderMeters();
-  if(P.ok) fx.at(el('pNext'),30,.8);
 }
 function next(){
   P.queue.shift(); P.checked=false; P.ok=false; P.sel=null;
@@ -1152,19 +1285,17 @@ function finish(){
   P.apply = ap ? {href:ap, label: /^#[A-Z]+$/.test(ap) ? `Try it: open ${ap.slice(1)}` : ap==='#portfolio' ? 'Try it: check your portfolio' : 'Try it: open the calculators'} : null;
   P.summary={xp,gems,secs,acc,perfect,extended};
   P.phase='end'; renderPlayer();
-  fx.burst(innerWidth/2, innerHeight*.28, 140, 1.4);
   el('player').querySelectorAll('[data-count]').forEach(n=>countUp(n, +n.dataset.count, n.dataset.suffix||''));
 }
 function renderEnd(){
-  const s=P.summary;
-  return `<div class="p-in end"><div class="trophy-stage">${emblem('mascot draw')}</div><h2 class="gold-text">${s.perfect?'Perfect lesson!':'Lesson complete!'}</h2>
-    ${s.extended?`<p style="margin:0;display:flex;gap:6px;align-items:center;color:var(--flame);font-weight:600">${I.flame}${Lr().streak.count}-day streak</p>`:''}
-    <div class="tiles">
-      <div class="tile" style="--tc:var(--gold)"><div class="th">Total XP</div><div class="tv" data-count="${s.xp}">${s.xp}</div></div>
-      <div class="tile" style="--tc:var(--up)"><div class="th">Accuracy</div><div class="tv" data-count="${s.acc}" data-suffix="%">${s.acc}%</div></div>
-      <div class="tile" style="--tc:var(--gem)"><div class="th">Time</div><div class="tv">${Math.floor(s.secs/60)}:${String(s.secs%60).padStart(2,'0')}</div></div>
+  const s=P.summary, t=`${Math.floor(s.secs/60)}:${String(s.secs%60).padStart(2,'0')}`;
+  return `<div class="p-in end">${emblem('mascot draw')}<span class="eyebrow">${esc(P.title)}</span><h2>${s.perfect?'Flawless':'Lesson complete'}</h2>
+    <div class="stats3">
+      <div><span class="eyebrow">XP earned</span><b data-count="${s.xp}">${s.xp}</b></div>
+      <div><span class="eyebrow">Accuracy</span><b data-count="${s.acc}" data-suffix="%">${s.acc}%</b></div>
+      <div><span class="eyebrow">Time</span><b>${t}</b></div>
     </div>
-    ${s.gems?`<p class="muted" style="margin:0;display:flex;gap:6px;align-items:center"><span style="color:var(--gem)">${I.gem}</span>+${s.gems} gems</p>`:''}</div>`;
+    <p class="muted end-note">${s.extended?`${I.flame}<span>${Lr().streak.count}-day streak</span>`:''}${s.gems?`${I.gem}<span>+${s.gems} credits</span>`:''}</p></div>`;
 }
 document.addEventListener('keydown',e=>{
   if(!P || el('player').hidden || P.quit) return;
@@ -1190,9 +1321,9 @@ function renderProfile(){
   el('shopGems').innerHTML = `${I.gem}<span>${l.gems}</span>`;
   el('shop').innerHTML = `
     <div class="shop-item"><span style="color:var(--heart)">${I.heart}</span><div><b>Refill hearts</b><small>${l.hearts}/${MAX_HEARTS} hearts${l.hearts<MAX_HEARTS?` · next free heart in ${nextHeartMins()} min`:' · full'}</small></div>
-      <button class="btn" type="button" data-buy="hearts" ${l.gems<30||l.hearts>=MAX_HEARTS?'disabled':''}>30 gems</button></div>
+      <button class="btn" type="button" data-buy="hearts" ${l.gems<30||l.hearts>=MAX_HEARTS?'disabled':''}>30 credits</button></div>
     <div class="shop-item"><span style="color:var(--gem)">${I.shield}</span><div><b>Streak freeze</b><small>Covers one missed day · you have ${l.streak.freezes}/2</small></div>
-      <button class="btn" type="button" data-buy="freeze" ${l.gems<50||l.streak.freezes>=2?'disabled':''}>50 gems</button></div>`;
+      <button class="btn" type="button" data-buy="freeze" ${l.gems<50||l.streak.freezes>=2?'disabled':''}>50 credits</button></div>`;
   el('cprog').innerHTML = COURSES.map(c=>{ const p=courseProgress(c.id);
     return `<div style="--c:${c.color}"><span class="ci">${COURSE_ICON[c.id]}</span><b style="font-size:14px">${esc(c.name)}</b><span class="num muted" style="font-size:13px">${p.done}/${p.total}</span>
       <div class="bar" style="grid-column:2 / span 2"><span style="width:${p.pct}%"></span></div></div>`; }).join('');
@@ -1221,7 +1352,7 @@ el('v-profile').addEventListener('click',e=>{
 });
 const lresetBtn=el('lresetBtn');
 lresetBtn.addEventListener('click',()=>{
-  el('lresetRow').innerHTML=`<span class="muted" style="font-size:14px">This clears XP, streak, gems, badges and course progress.</span>
+  el('lresetRow').innerHTML=`<span class="muted" style="font-size:14px">This clears XP, streak, credits, badges and course progress.</span>
     <button class="btn" type="button" id="lrNo">Keep my progress</button><button class="btn sell" type="button" id="lrYes">Reset</button>`;
   el('lrNo').onclick=()=>el('lresetRow').replaceChildren(lresetBtn);
   el('lrYes').onclick=()=>{ S.learn=freshLearn(); save(); el('lresetRow').replaceChildren(lresetBtn); renderMeters(); renderTab(); toast('Learning progress reset'); };
@@ -1531,7 +1662,6 @@ function submitOrder(){
     S.orders.push({id:++S.seq,s:cur,side,qty:q,limit:lim,t:Date.now()}); save();
     toast(`Limit ${side} placed: ${qtyF(q)} ${cur} at ${$(lim)}`); el('dAmt').value=''; updateEstimate(true); return; }
   const r=execute(cur,side,q,M[cur].price); if(r) return fail(r);
-  fx.at(el('dGo'), 34, .8);
   el('dAmt').value=''; renderStock(false);
 }
 function execute(s,sd,q,px){
@@ -1756,12 +1886,10 @@ const fx=(()=>{ const c=el('fx'), x=c.getContext('2d'); let parts=[], running=fa
   const sp=el('splash'); let seen=false;
   try{ seen=sessionStorage.getItem('toro.splash')==='1'; }catch(e){}
   if(seen){ sp.remove(); return; }
-  el('splashMark').innerHTML=emblem('draw');
   let gone=false;
   const done=()=>{ if(gone) return; gone=true; sp.classList.add('out'); setTimeout(()=>sp.remove(),700); try{ sessionStorage.setItem('toro.splash','1'); }catch(e){} };
-  sp.addEventListener('click',done); setTimeout(done, REDUCE?500:2700);
+  sp.addEventListener('click',done); setTimeout(done, REDUCE?500:2600);
 })();
-el('brandMark').innerHTML=emblem();
 // Live charts redraw at ~30fps for the draw-in, pulse and scrub animations
 (function chartLoop(){ let last=0; const f=t=>{ if(!document.hidden && t-last>32){ last=t;
   if(tab==='trade' && (!P||el('player').hidden)) drawStock(); if(tab==='portfolio') drawPort(); } requestAnimationFrame(f); }; requestAnimationFrame(f); })();
