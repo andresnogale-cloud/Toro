@@ -43,8 +43,8 @@ svg.i{width:20px;height:20px;display:block;flex:none}
 @keyframes sheen{to{background-position:-200% 0}}
 
 /* Ambient */
-#ambient{position:fixed;inset:0;z-index:-1;pointer-events:none;width:100%;height:100%;opacity:.55}
-.glow{position:fixed;z-index:-2;pointer-events:none;inset:0;background:radial-gradient(70vmax 45vmax at 50% -18%,color-mix(in srgb,var(--accent) 9%,transparent),transparent 62%),#000;transition:background .8s}
+#ambient{position:fixed;inset:0;z-index:0;pointer-events:none;width:100%;height:100%}
+.glow{position:fixed;z-index:0;pointer-events:none;inset:0;background:radial-gradient(70vmax 45vmax at 50% -18%,color-mix(in srgb,var(--accent) 9%,transparent),transparent 62%),#000;transition:background .8s}
 
 /* Emblem */
 .emblem{display:block;overflow:visible}
@@ -89,7 +89,7 @@ nav.tabs .ind{position:absolute;bottom:-11px;height:2px;border-radius:2px;backgr
 .meter.off{color:var(--faint)}
 .meter.pop{animation:pop .5s var(--ease)}
 @keyframes pop{40%{transform:scale(1.25)}}
-main{max-width:1320px;margin:0 auto;padding-inline:24px;padding-block:22px 120px}
+main{position:relative;z-index:1;max-width:1320px;margin:0 auto;padding-inline:24px;padding-block:22px 120px}
 .view{display:grid;gap:18px;animation:viewIn .45s var(--ease)}
 @keyframes viewIn{from{opacity:.001;transform:translateY(8px)}}
 .view>*,.two>*,.tools>*,.learn-grid>*,.term>*,.lower>*,.port-grid>*{min-width:0}
@@ -627,6 +627,19 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
   .courses{margin-inline:-16px;padding-inline:16px;gap:22px}
   .brand-word{height:13px}
 }
+/* Candle rows */
+.crow{position:relative;display:flex;align-items:stretch;gap:var(--gap,6px);height:var(--ht,90px)}
+.cd{position:relative;flex:1;min-width:0}
+.cd i{position:absolute;left:12%;right:12%;bottom:var(--b);height:var(--h);border-radius:1.5px;background:var(--cc);transform-origin:50% 100%;animation:cIn .7s var(--ease) backwards;animation-delay:var(--d)}
+.cd::before{content:"";position:absolute;left:50%;width:1px;margin-left:-.5px;bottom:var(--wb);height:var(--wh);background:var(--cc);opacity:.6;animation:cFade .7s ease backwards;animation-delay:var(--d)}
+.cd.up{--cc:var(--gold)} .cd.dn{--cc:#4A4A52}
+@keyframes cIn{from{transform:scaleY(0);opacity:0}}
+@keyframes cFade{from{opacity:0}}
+.splash-candles{position:absolute;left:6%;right:6%;bottom:7%;--ht:36vh;--gap:1vw;opacity:.32;-webkit-mask:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);mask:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent)}
+.splash-in{position:relative;z-index:1}
+.end-candles{width:min(380px,82%);--ht:84px;--gap:5px;opacity:.9}
+.meter.snd{color:var(--ink-2)!important}
+.meter.snd.off{color:var(--faint)!important}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .emblem.draw path{stroke-dashoffset:0}
@@ -653,6 +666,7 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
   </defs>
 </svg>
 <div class="splash" id="splash">
+  <div class="crow splash-candles" id="splashCandles" aria-hidden="true"></div>
   <div class="splash-in"><div class="splash-logo"><img src="assets/toro-full.png" alt="Toro" width="320" height="276"></div><div class="tagline">Learn money · Master markets</div></div>
 </div>
 <header class="top">
@@ -668,6 +682,7 @@ nav.tabs .ind{background:#fff;box-shadow:0 0 10px rgba(255,255,255,.35)}
       <button role="tab" data-tab="profile" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Profile</button>
     </nav>
     <div class="meters" id="meters"></div>
+    <button class="meter snd" id="sndBtn" type="button" aria-pressed="true" aria-label="Sound on" title="Sound on"></button>
   </div>
 </header>
 
@@ -961,6 +976,45 @@ const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e
 /* ---------- Toasts ---------- */
 function toast(msg, icon){ const t=document.createElement('div'); t.className='toast'; t.innerHTML=(icon||'')+'<span></span>'; t.lastChild.textContent=msg; el('toasts').appendChild(t); setTimeout(()=>t.remove(),4200); }
 
+/* ---------- Sound: soft synthesised tones, no audio files ---------- */
+const Sound=(()=>{
+  let ctx=null, out=null;
+  const enabled=()=>S.sound!==false;
+  function ac(){
+    if(!ctx){ const C=window.AudioContext||window.webkitAudioContext; if(!C) return null;
+      try{ ctx=new C(); }catch(e){ return null; }
+      const comp=ctx.createDynamicsCompressor(); comp.threshold.value=-18; comp.ratio.value=3;
+      out=ctx.createGain(); out.gain.value=.9; out.connect(comp).connect(ctx.destination); }
+    if(ctx.state==='suspended') ctx.resume();
+    return ctx;
+  }
+  // one voice: a sine plus a quiet octave partial for a bell-like, expensive feel
+  function tone(f, at, dur, o={}){
+    const c=ac(); if(!c) return; const t=c.currentTime+at, g=c.createGain(), vol=o.gain??.06;
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+(o.attack??.008)); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    g.connect(out);
+    const parts=o.type ? [[o.type,1,1]] : [['sine',1,1],['sine',2,.18],['triangle',3,.05]];
+    for(const [type,mult,amp] of parts){ const osc=c.createOscillator(), a=c.createGain(); osc.type=type; osc.frequency.setValueAtTime(f*mult,t);
+      if(o.slide) osc.frequency.exponentialRampToValueAtTime(f*mult*o.slide,t+dur); a.gain.value=amp; osc.connect(a).connect(g); osc.start(t); osc.stop(t+dur+.05); }
+  }
+  const SFX={
+    tap:     ()=>tone(1320,0,.06,{gain:.018,type:'sine'}),
+    select:  ()=>tone(880,0,.09,{gain:.03}),
+    correct: ()=>{ tone(784,0,.22,{gain:.055}); tone(1175,.09,.42,{gain:.05}); },
+    wrong:   ()=>{ tone(247,0,.32,{gain:.06,type:'triangle',slide:.84}); },
+    pair:    ()=>tone(1047,0,.16,{gain:.035}),
+    complete:()=>{ [523,659,784,1047].forEach((f,i)=>tone(f,i*.1,.7,{gain:.05})); tone(1568,.45,1.1,{gain:.025}); },
+    trade:   ()=>{ tone(1319,0,.12,{gain:.04}); tone(1976,.08,.5,{gain:.035}); },
+    chime:   ()=>{ [880,1109,1319].forEach((f,i)=>tone(f,i*.08,.55,{gain:.035})); },
+    alert:   ()=>{ tone(988,0,.18,{gain:.045}); tone(988,.22,.3,{gain:.04}); },
+  };
+  return {
+    play(k){ if(enabled() && SFX[k]) try{ SFX[k](); }catch(e){} },
+    on: enabled,
+    toggle(){ S.sound = !enabled(); save(); if(enabled()) SFX.chime(); return enabled(); }
+  };
+})();
+
 /* =====================================================================
    LEARNING ENGINE
    ===================================================================== */
@@ -1029,7 +1083,7 @@ const BADGES = [
   {id:'graduate', name:'Graduate',      desc:'Complete a whole course',         icon:'trophy', color:'#7A5CC4', test:()=>COURSES.some(c=>courseProgress(c.id).pct===100)},
 ];
 function checkBadges(){
-  for(const b of BADGES){ if(!Lr().badges.includes(b.id) && b.test()){ Lr().badges.push(b.id); toast(`Badge earned: ${b.name}`, I[b.icon]); } }
+  for(const b of BADGES){ if(!Lr().badges.includes(b.id) && b.test()){ Lr().badges.push(b.id); toast(`Badge earned: ${b.name}`, I[b.icon]); Sound.play('chime'); } }
   save();
 }
 
@@ -1066,6 +1120,11 @@ function renderMeters(){
   }
 }
 el('meters').addEventListener('click',e=>{ const b=e.target.closest('[data-go]'); if(b) showTab(b.dataset.go); });
+const SND_ON='<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>';
+const SND_OFF='<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
+function renderSnd(){ const on=Sound.on(), b=el('sndBtn'); b.innerHTML=on?SND_ON:SND_OFF; b.setAttribute('aria-pressed',String(on)); b.setAttribute('aria-label',on?'Sound on':'Sound off'); b.title=on?'Sound on · tap to mute':'Sound off · tap to unmute'; b.classList.toggle('off',!on); }
+el('sndBtn').addEventListener('click',()=>{ Sound.toggle(); renderSnd(); });
+renderSnd();
 
 /* ---------- Learn view ---------- */
 function renderLearn(){
@@ -1236,19 +1295,19 @@ function wirePlayer(){
   on('pNext',next);
   on('pDone',closePlayer);
   on('pApply',()=>{ setTimeout(closePlayer,0); });
-  on('pRefill',()=>{ if(Lr().gems<30) return; Lr().gems-=30; Lr().hearts=MAX_HEARTS; save(); toast('Hearts refilled', I.heart); renderMeters();
+  on('pRefill',()=>{ if(Lr().gems<30) return; Lr().gems-=30; Lr().hearts=MAX_HEARTS; save(); toast('Hearts refilled', I.heart); Sound.play('trade'); renderMeters();
     if(P.queue.length){ P.phase='q'; renderPlayer(); } else { const {c,u,l}=P; closePlayer(); startLesson(c,u,l); } });
   if(P.phase!=='q'||P.checked) return;
   const q=P.queue[0], p=prep(q);
-  pl.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{ const v=b.dataset.pick; P.sel = q.t==='tf' ? v==='true' : +v; renderPlayer(); });
-  pl.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.add; if(!p.ans.includes(i)) p.ans.push(i); renderPlayer(); });
+  pl.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{ Sound.play('select'); const v=b.dataset.pick; P.sel = q.t==='tf' ? v==='true' : +v; renderPlayer(); });
+  pl.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{ Sound.play('select'); const i=+b.dataset.add; if(!p.ans.includes(i)) p.ans.push(i); renderPlayer(); });
   pl.querySelectorAll('[data-unpick]').forEach(b=>b.onclick=()=>{ p.ans.splice(+b.dataset.unpick,1); renderPlayer(); });
   pl.querySelectorAll('[data-ml],[data-mr]').forEach(b=>b.onclick=()=>{
     if(b.dataset.ml!=null) p.selL = p.selL===+b.dataset.ml ? null : +b.dataset.ml; else p.selR = p.selR===+b.dataset.mr ? null : +b.dataset.mr;
     if(p.selL!=null && p.selR!=null){
-      if(p.selL===p.selR){ p.done.push(p.selL); p.selL=p.selR=null;
+      if(p.selL===p.selR){ p.done.push(p.selL); p.selL=p.selR=null; Sound.play(p.done.length===q.pairs.length?'correct':'pair');
         if(p.done.length===q.pairs.length){ P.checked=true; P.ok=true; P.correct++; } renderPlayer(); }
-      else { const a=p.selL, r=p.selR; p.selL=p.selR=null; p.miss++; renderPlayer();
+      else { const a=p.selL, r=p.selR; p.selL=p.selR=null; p.miss++; Sound.play('wrong'); renderPlayer();
         pl.querySelector(`[data-ml="${a}"]`)?.classList.add('miss'); pl.querySelector(`[data-mr="${r}"]`)?.classList.add('miss'); }
     } else renderPlayer();
   });
@@ -1260,8 +1319,8 @@ function check(){
   else if(q.t==='tf') P.ok = P.sel===q.a;
   else if(q.t==='order') P.ok = p.ans.every((v,i)=>v===i);
   P.checked=true;
-  if(P.ok) P.correct++;
-  else { P.mistakes++; loseHeart(); P.queue.push({...q, prep:null}); }
+  if(P.ok){ P.correct++; Sound.play('correct'); }
+  else { P.mistakes++; loseHeart(); P.queue.push({...q, prep:null}); Sound.play('wrong'); }
   renderPlayer(); renderMeters();
 }
 function next(){
@@ -1284,7 +1343,7 @@ function finish(){
   const ap = P.lesson && P.lesson.apply;
   P.apply = ap ? {href:ap, label: /^#[A-Z]+$/.test(ap) ? `Try it: open ${ap.slice(1)}` : ap==='#portfolio' ? 'Try it: check your portfolio' : 'Try it: open the calculators'} : null;
   P.summary={xp,gems,secs,acc,perfect,extended};
-  P.phase='end'; renderPlayer();
+  P.phase='end'; renderPlayer(); Sound.play('complete');
   el('player').querySelectorAll('[data-count]').forEach(n=>countUp(n, +n.dataset.count, n.dataset.suffix||''));
 }
 function renderEnd(){
@@ -1295,6 +1354,7 @@ function renderEnd(){
       <div><span class="eyebrow">Accuracy</span><b data-count="${s.acc}" data-suffix="%">${s.acc}%</b></div>
       <div><span class="eyebrow">Time</span><b>${t}</b></div>
     </div>
+    <div class="crow end-candles" aria-hidden="true">${candleRow(16, Date.now()%1e6)}</div>
     <p class="muted end-note">${s.extended?`${I.flame}<span>${Lr().streak.count}-day streak</span>`:''}${s.gems?`${I.gem}<span>+${s.gems} credits</span>`:''}</p></div>`;
 }
 document.addEventListener('keydown',e=>{
@@ -1346,8 +1406,8 @@ function drawBars(c, pts, goal){
 el('v-profile').addEventListener('click',e=>{
   const g=e.target.closest('[data-goal]'); if(g){ Lr().goal=+g.dataset.goal; save(); renderProfile(); renderMeters(); return; }
   const b=e.target.closest('[data-buy]'); if(b){ const l=Lr();
-    if(b.dataset.buy==='hearts' && l.gems>=30){ l.gems-=30; l.hearts=MAX_HEARTS; toast('Hearts refilled', I.heart); }
-    if(b.dataset.buy==='freeze' && l.gems>=50 && l.streak.freezes<2){ l.gems-=50; l.streak.freezes++; toast('Streak freeze equipped', I.shield); }
+    if(b.dataset.buy==='hearts' && l.gems>=30){ l.gems-=30; l.hearts=MAX_HEARTS; toast('Hearts refilled', I.heart); Sound.play('trade'); }
+    if(b.dataset.buy==='freeze' && l.gems>=50 && l.streak.freezes<2){ l.gems-=50; l.streak.freezes++; toast('Streak freeze equipped', I.shield); Sound.play('trade'); }
     save(); renderProfile(); renderMeters(); }
 });
 const lresetBtn=el('lresetBtn');
@@ -1630,7 +1690,7 @@ ticket.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{ mode=b.dataset
 el('dAmt').oninput=()=>updateEstimate(true); el('dLim').oninput=()=>updateEstimate(true);
 el('dGo').onclick=submitOrder;
 el('aAdd').onclick=()=>{ const px=parseFloat(el('aPx').value); if(!(px>0)){ toast('Enter a price above $0 for the alert.'); return; }
-  S.alerts.push({id:++S.seq,s:cur,dir:el('aDir').value,px}); save(); toast(`Alert set: ${cur} ${el('aDir').value} ${$(px)}`); };
+  S.alerts.push({id:++S.seq,s:cur,dir:el('aDir').value,px}); save(); Sound.play('select'); toast(`Alert set: ${cur} ${el('aDir').value} ${$(px)}`); };
 el('dCopy').onclick=()=>{ const link=location.href.split('#')[0]+'#'+cur; const fail=()=>toast(link);
   try{ navigator.clipboard.writeText(link).then(()=>toast('Link copied'),fail); }catch(e){ fail(); } };
 function orderQty(){
@@ -1671,7 +1731,7 @@ function execute(s,sd,q,px){
   else { const h=S.holdings[s]; if(!h||h.qty<q-1e-9) return `You can sell at most ${qtyF(h?.qty||0)} shares.`;
     h.cost-=h.cost*Math.min(1,q/h.qty); h.qty-=q; S.cash+=cost; if(h.qty<1e-6) delete S.holdings[s]; }
   S.txns.push({t:Date.now(),s,side:sd,qty:q,px}); S.starter=false; day().trades++; save();
-  toast(`${sd==='buy'?'Bought':'Sold'} ${qtyF(q)} ${s} at ${$(px)}`); checkQuests(); checkBadges(); renderBP(); renderMeters(); return null;
+  toast(`${sd==='buy'?'Bought':'Sold'} ${qtyF(q)} ${s} at ${$(px)}`); Sound.play('trade'); checkQuests(); checkBadges(); renderBP(); renderMeters(); return null;
 }
 
 /* ---------- Portfolio view ---------- */
@@ -1792,7 +1852,7 @@ function showTab(t, push=true){
   if(t==='portfolio') pRevealAt=performance.now();
   moveInd(); renderTab(); window.scrollTo(0,0);
 }
-document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>{ Sound.play('tap'); showTab(b.dataset.tab); }));
 
 function renderTab(live){
   renderMeters();
@@ -1822,7 +1882,7 @@ function tick(){
       S.orders=S.orders.filter(x=>x.id!==o.id);
       const err=execute(o.s,o.side,o.qty,p); if(err) toast(`Limit ${o.side} for ${o.s} cancelled. ${err}`); save(); } }
   for(const a of [...S.alerts]){ const p=M[a.s].price;
-    if((a.dir==='above'&&p>=a.px)||(a.dir==='below'&&p<=a.px)){ toast(`Alert: ${a.s} is ${a.dir} ${$(a.px)} (now ${$(p)})`); S.alerts=S.alerts.filter(x=>x.id!==a.id); save(); } }
+    if((a.dir==='above'&&p>=a.px)||(a.dir==='below'&&p<=a.px)){ toast(`Alert: ${a.s} is ${a.dir} ${$(a.px)} (now ${$(p)})`); Sound.play('alert'); S.alerts=S.alerts.filter(x=>x.id!==a.id); save(); } }
   if(!P || el('player').hidden) renderTab(true);
 }
 setInterval(tick,2000);
@@ -1870,22 +1930,51 @@ const fx=(()=>{ const c=el('fx'), x=c.getContext('2d'); let parts=[], running=fa
     if(!running){ running=true; requestAnimationFrame(step); } }
   return { burst, at:(n,k,s)=>{ const r=n&&n.getBoundingClientRect(); if(r) burst(r.left+r.width/2, r.top+r.height/2, k, s); } };
 })();
+// Background: a slow, faint candlestick chart that scrolls across the lower screen
 (function ambient(){
-  const c=el('ambient'), x=c.getContext('2d'); let W=0,H=0, running=false; const ps=[];
-  const size=()=>{ const d=Math.min(2,devicePixelRatio||1); W=innerWidth; H=innerHeight; c.width=W*d; c.height=H*d; x.setTransform(d,0,0,d,0,0); };
+  const c=el('ambient'), x=c.getContext('2d'); let W=0,H=0, running=false;
+  const STEP=16, SPEED=.22; let price=100, off=0, lo=null, hi=null; const cs=[];
+  const mk=born=>{ const o=price, cl=o*(1+(Math.random()-.46)*.028); price=cl;
+    return {o, c:cl, h:Math.max(o,cl)*(1+Math.random()*.011), l:Math.min(o,cl)*(1-Math.random()*.011), born}; };
+  const size=()=>{ const d=Math.min(2,devicePixelRatio||1); W=innerWidth; H=innerHeight; c.width=W*d; c.height=H*d; x.setTransform(d,0,0,d,0,0);
+    while(cs.length < Math.ceil(W/STEP)+3) cs.push(mk(0)); };
   size(); addEventListener('resize',size);
-  for(let i=0;i<70;i++) ps.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.5+.3,s:Math.random()*.22+.04,t:Math.random()*6.28,d:(Math.random()-.5)*.12});
-  const draw=()=>{ x.clearRect(0,0,W,H); for(const p of ps){ const a=.18+.3*(.5+.5*Math.sin(p.t)); x.beginPath(); x.arc(p.x,p.y,p.r,0,6.283); x.fillStyle=`rgba(232,200,120,${a})`; x.fill(); } };
-  const frame=()=>{ if(document.hidden){ running=false; return; }
-    for(const p of ps){ p.y-=p.s; p.x+=p.d; p.t+=.02; if(p.y<-4){ p.y=H+4; p.x=Math.random()*W; } }
-    draw(); requestAnimationFrame(frame); };
+  function draw(now){
+    x.clearRect(0,0,W,H);
+    let mn=Infinity, mx=-Infinity; for(const k of cs){ mn=Math.min(mn,k.l); mx=Math.max(mx,k.h); }
+    lo = lo==null ? mn : lo+(mn-lo)*.04; hi = hi==null ? mx : hi+(mx-hi)*.04;
+    const top=H*.5, bot=H*.94, Y=v=>bot-(v-lo)/((hi-lo)||1)*(bot-top);
+    const ma=[];
+    cs.forEach((k,i)=>{ const cx=i*STEP-off+STEP/2, grow=k.born?Math.min(1,(now-k.born)/700):1, e=1-Math.pow(1-grow,3);
+      const cl=k.o+(k.c-k.o)*e, up=cl>=k.o, fade=Math.min(1, cx/(W*.25), (W-cx)/(W*.08));
+      const al=Math.max(0,fade)*(up?.22:.13);
+      x.strokeStyle=up?`rgba(216,179,90,${al})`:`rgba(150,150,160,${al})`; x.fillStyle=x.strokeStyle; x.lineWidth=1;
+      x.beginPath(); x.moveTo(Math.round(cx)+.5,Y(k.o+(k.h-k.o)*e)); x.lineTo(Math.round(cx)+.5,Y(k.o+(k.l-k.o)*e)); x.stroke();
+      const y1=Y(Math.max(k.o,cl)), y2=Y(Math.min(k.o,cl)); x.fillRect(cx-4, y1, 8, Math.max(1,y2-y1));
+      ma.push([cx,(k.o+cl)/2]); });
+    // a soft moving-average line through the candles
+    x.beginPath(); let sm=null; ma.forEach(([cx,v],i)=>{ sm = sm==null ? v : sm+(v-sm)*.2; i?x.lineTo(cx,Y(sm)):x.moveTo(cx,Y(sm)); });
+    const g=x.createLinearGradient(0,0,W,0); g.addColorStop(0,'rgba(216,179,90,0)'); g.addColorStop(.35,'rgba(216,179,90,.16)'); g.addColorStop(1,'rgba(216,179,90,.22)');
+    x.strokeStyle=g; x.lineWidth=1.2; x.stroke();
+  }
+  const frame=now=>{ if(document.hidden){ running=false; return; }
+    off+=SPEED; if(off>=STEP){ off-=STEP; cs.shift(); cs.push(mk(now)); }
+    draw(now); requestAnimationFrame(frame); };
   const start=()=>{ if(!running && !REDUCE && !document.hidden){ running=true; requestAnimationFrame(frame); } };
-  draw(); start(); document.addEventListener('visibilitychange',start);
+  draw(performance.now()); start(); document.addEventListener('visibilitychange',start);
 })();
+// Candle rows used on the opening screen and the lesson-complete screen: a rising "bull run"
+function candleRow(n, seed, trend=.72){
+  const r=mulberry32(seed); let p=20; const k=[];
+  for(let i=0;i<n;i++){ const o=p, c=p+(r()<trend ? 2+r()*8 : -(1+r()*4)); p=c; k.push({o,c,h:Math.max(o,c)+r()*1.6,l:Math.min(o,c)-r()*1.6}); }
+  const lo=Math.min(...k.map(q=>q.l)), hi=Math.max(...k.map(q=>q.h)), P=v=>(v-lo)/(hi-lo)*100;
+  return k.map((q,i)=>`<span class="cd ${q.c>=q.o?'up':'dn'}" style="--b:${P(Math.min(q.o,q.c)).toFixed(1)}%;--h:${Math.max(1.5,P(Math.max(q.o,q.c))-P(Math.min(q.o,q.c))).toFixed(1)}%;--wb:${P(q.l).toFixed(1)}%;--wh:${(P(q.h)-P(q.l)).toFixed(1)}%;--d:${(i*55)}ms"><i></i></span>`).join('');
+}
 (function splash(){
   const sp=el('splash'); let seen=false;
   try{ seen=sessionStorage.getItem('toro.splash')==='1'; }catch(e){}
   if(seen){ sp.remove(); return; }
+  el('splashCandles').innerHTML=candleRow(34, 7);
   let gone=false;
   const done=()=>{ if(gone) return; gone=true; sp.classList.add('out'); setTimeout(()=>sp.remove(),700); try{ sessionStorage.setItem('toro.splash','1'); }catch(e){} };
   sp.addEventListener('click',done); setTimeout(done, REDUCE?500:2600);

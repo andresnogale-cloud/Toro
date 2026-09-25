@@ -22,6 +22,8 @@ Pure black, elegant and modern, in the style of a modern trading app. Gold is ke
   - Gold bursts on correct answers and trades, and confetti when a lesson ends.
   - Diamond lesson stops with a rotating ring.
 - **Fonts:** Figtree for the interface, JetBrains Mono for chart axes, and Cinzel for the TORO wordmark.
+- **Candlestick motion:** a faint gold candlestick chart scrolls slowly across the background, candles rise behind the logo on the opening screen, and a short "bull run" of candles grows when you finish a lesson.
+- **Sound:** soft tones generated in the browser, with no audio files. You hear them when you pick an answer, answer right or wrong, match a pair, finish a lesson, earn a badge, place a trade, trigger a price alert or switch tabs. The speaker button in the header mutes or unmutes, and your choice is remembered.
 - **Reduced motion:** if the device asks for less motion, the animations switch off.
 
 ## Courses
