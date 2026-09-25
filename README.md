@@ -4,6 +4,17 @@ Toro teaches money and business in bite-size lessons, then lets you practice wit
 
 Open `index.html` in a browser to run it. There is no build step. Lesson content lives in `courses.js`.
 
+## Design
+
+Black and gold, built around the Toro logo (`assets/toro-logo.png`). The emblem is redrawn in the app as a vector (`EMBLEM_D` in `index.html`), so it stays sharp at every size and can animate.
+
+- **Opening animation:** the emblem draws itself in gold, a light sweeps across it, and the TORO wordmark fades in. It plays once per browser session; tap to skip.
+- **Look:** glass panels with gold hairline borders, drifting gold dust in the background, and a gold sheen on the active tab and buttons.
+- **Lesson path:** diamond-shaped stops taken from the lattice inside the logo. Finished stops turn solid gold, and the current one has a rotating ring.
+- **Celebrations:** a gold burst on each correct answer, confetti and counting numbers when a lesson ends, and header counters that pop when your streak, gems or hearts change.
+- **Fonts:** Cinzel for headings and the wordmark, Manrope for body text, JetBrains Mono for numbers.
+- **Reduced motion:** if the device asks for less motion, the animations switch off.
+
 ## Courses
 
 | Course | Unit 1 | Unit 2 |

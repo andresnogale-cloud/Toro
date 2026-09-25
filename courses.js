@@ -15,7 +15,7 @@ const L = (t, tip, qs, apply) => ({t, tip, qs, apply});
 
 window.TORO_COURSES = [
 {
-  id:'invest', name:'Stocks & Investing', color:'#1F9D63',
+  id:'invest', name:'Stocks & Investing', color:'#2BB673',
   blurb:'What stocks are, why prices move, and how to build a portfolio that lasts.',
   units:[
     {t:'Owning a piece of a company', lessons:[
@@ -67,7 +67,7 @@ window.TORO_COURSES = [
   ]
 },
 {
-  id:'trading', name:'Trading', color:'#3F7CD6',
+  id:'trading', name:'Trading', color:'#4C8DF0',
   blurb:'Order types, reading charts, and the risk rules traders live by.',
   units:[
     {t:'Placing orders', lessons:[
@@ -119,7 +119,7 @@ window.TORO_COURSES = [
   ]
 },
 {
-  id:'money', name:'Personal Finance', color:'#C98A12',
+  id:'money', name:'Personal Finance', color:'#E0A43A',
   blurb:'Budgeting, emergency funds, credit scores and getting out of debt.',
   units:[
     {t:'Budgeting basics', lessons:[
@@ -171,7 +171,7 @@ window.TORO_COURSES = [
   ]
 },
 {
-  id:'biz', name:'Marketing & Business', color:'#C94F78',
+  id:'biz', name:'Marketing & Business', color:'#E0567F',
   blurb:'Finding customers, standing out, and the numbers that run a business.',
   units:[
     {t:'Marketing basics', lessons:[
@@ -223,7 +223,7 @@ window.TORO_COURSES = [
   ]
 },
 {
-  id:'supply', name:'Global Supply Chains', color:'#17929F',
+  id:'supply', name:'Global Supply Chains', color:'#22B8C8',
   blurb:'How goods cross the world, who pays for shipping, and how companies handle shocks.',
   units:[
     {t:'How goods get to you', lessons:[
